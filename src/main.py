@@ -1,3 +1,5 @@
+from typing import Literal
+
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 
@@ -23,6 +25,9 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = crud.get_user_by_email(db, email=user.email)
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
+    db_user = crud.get_user_by_login(db, login=user.login)
+    if db_user:
+        raise HTTPException(status_code=400, detail="Login already registered")
     return crud.create_user(db=db, user=user)
 
 
@@ -47,5 +52,10 @@ def create_comic_book(
 
 
 @app.get("/comic_books/", response_model=list[schemas.ComicBook])
-def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+def read_comic_books(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return crud.get_comic_books(db, skip=skip, limit=limit)
+
+
+@app.get("/comic_books/search_by", response_model=schemas.ComicBook)
+def read_comic_book(attr: Literal['id', 'title', 'author', 'genre'], val, db: Session = Depends(get_db)):
+    return crud.get_comic_book_by_attribute(db, **{attr: val})
