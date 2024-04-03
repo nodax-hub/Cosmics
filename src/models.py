@@ -36,6 +36,8 @@ class OrderStatus(enum.Enum):
 
 
 class Order(Base):
+    __tablename__ = "Order"
+    
     id = Column(Integer, primary_key=True)
 
     customer_id = Column(Integer, ForeignKey("User.id"))
@@ -48,6 +50,8 @@ class Order(Base):
 
 
 class Sale(Base):
+    __tablename__ = "Sale"
+    
     id = Column(Integer, primary_key=True)
     
     order_id = Column(Integer, ForeignKey("Order.id"))
