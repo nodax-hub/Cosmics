@@ -38,7 +38,7 @@
 
 ## Моделируем ERD
 
-![ERD](erd_diagram.png)
+![ERD](backend/erd_diagram.png)
 
 ## Выбор сервера приложений и СУБД
 

@@ -1,25 +1,34 @@
 from datetime import datetime
-
 from pydantic import BaseModel
+from enum import Enum
+
+
+class Role(str, Enum):
+    customer = "customer"
+    admin = "admin"
 
 
 class UserBase(BaseModel):
-    login: str
     email: str
+
+
+class UserCreate(UserBase):
+    password: str
+    login: str
     first_name: str
     last_name: str
 
 
-class UserCreate(UserBase):
+class UserLogin(UserBase):
     password: str
 
 
 class User(UserBase):
     id: int
-    role: str
-    
+    role: Role
+
     class Config:
-        from_attributes = True
+        orm_mode = True
 
 
 class OrderBase(BaseModel):
@@ -34,9 +43,9 @@ class Order(OrderBase):
     id: int
     order_date: datetime
     status: str
-    
+
     class Config:
-        from_attributes = True
+        orm_mode = True
 
 
 class SaleBase(BaseModel):
@@ -52,20 +61,18 @@ class SaleCreate(SaleBase):
 class Sale(SaleBase):
     id: int
     sale_date: datetime
-    
+
     class Config:
-        from_attributes = True
+        orm_mode = True
 
 
 class ComicBookBase(BaseModel):
     title: str
     author: str
     publisher: str
-    
     stock_quantity: int
     description: str
     genre: str
-    
     price: float
 
 
@@ -75,6 +82,6 @@ class ComicBookCreate(ComicBookBase):
 
 class ComicBook(ComicBookBase):
     id: int
-    
+
     class Config:
-        from_attributes = True
+        orm_mode = True
