@@ -1,0 +1,90 @@
+
+.workWithUs {
+  padding: 40px;
+  background: rgba(0, 0, 0, 0.7); /* Полупрозрачный фон для улучшения видимости звезд */
+  text-align: center;
+  font-family: 'Comic Neue', sans-serif;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* добавляем тень для подъема блока */
+  margin: 20px 0;
+}
+
+.workWithUs h2 {
+  margin-bottom: 20px;
+  font-size: 64px;
+  color: white;
+}
+
+.workWithUs ul {
+  list-style-type: none; /* Убираем маркеры списка */
+  padding: 0;
+  margin-bottom: 10px;
+}
+
+.workWithUs li {
+  color: #ddd; /* Изменим цвет текста */
+  font-size: 20px;
+  margin-bottom: 10px; /* Отступ между элементами списка */
+}
+
+.workWithUs a {
+  color: white; /* Стиль ссылки */
+  text-decoration: none;
+}
+
+.workWithUs a:hover {
+  text-decoration: underline;
+}
+
+.contactButton {
+  background: linear-gradient(135deg, #6e8efb, #a777e3);
+  border: none;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 12px 25px;
+  border-radius: 12px;
+  font-size: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+.contactButton:hover {
+  background: linear-gradient(135deg, #5d7efb, #9066e3);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.partnershipText {
+  font-size: 20px;  /* Увеличенный размер шрифта */
+  color: #ddd;      /* Цвет текста, если нужно его изменить */
+  margin: 0 50px;  /* Предполагаем, что текст центрирован с отступами */
+  text-align: center; /* Центрирование текста, если необходимо */
+  margin-bottom: 20px;
+}
+
+.background {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  background: #000;
+}
+
+.stars-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+.star {
+  width: 2px;
+  height: 2px;
+  background: white;
+  position: absolute;
+  border-radius: 50%;
+  box-shadow: 0 0 2px white;
+}

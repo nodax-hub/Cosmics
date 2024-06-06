@@ -1,0 +1,89 @@
+
+.mainContent {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 30px;
+  min-height: 60vh;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  position: relative;
+  z-index: 1;
+  font-family: 'Comic Neue', sans-serif;
+}
+
+.salesText {
+  flex: 1;
+  text-align: left;
+  margin: 100px 30px 30px 100px;
+  max-width: 400px;
+}
+
+.salesText h2 {
+  font-size: 32px;
+  margin-bottom: 20px;
+  color: #00c8ff;
+}
+
+.salesText p {
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.comicsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  flex: 2;
+}
+
+.card {
+  background: #1a1a1a;
+  border-radius: 10px;
+  color: white;
+  margin: 15px;
+  width: 250px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+.card img {
+  border-radius: 10px 10px 0 0;
+  width: 100%;
+}
+
+.card .container {
+  padding: 15px;
+}
+
+.card .container h4 {
+  font-size: 22px;
+  margin: 10px 0;
+}
+
+.card .container p {
+  font-size: 18px;
+  color: #aaa;
+}
+
+.loginButton {
+  background: linear-gradient(135deg, #6e8efb, #a777e3);
+  border: none;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 12px 25px;
+  border-radius: 12px;
+  font-size: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+.loginButton:hover {
+  background: linear-gradient(135deg, #5d7efb, #9066e3);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
