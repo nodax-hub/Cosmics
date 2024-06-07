@@ -1,4 +1,3 @@
-import logging
 from typing import Literal
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
