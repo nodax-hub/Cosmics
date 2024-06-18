@@ -25,7 +25,6 @@ const MainContent = () => {
       <div className="salesText">
         <h2>Лучшие комиксы для вас!</h2>
         <p>У нас вы найдете лучшие комиксы, которые подарят вам невероятные эмоции и погрузят в удивительный мир супергероев. Покупайте прямо сейчас и наслаждайтесь захватывающими историями!</p>
-        <button className="loginButton" onClick={toggleLoginForm}>Войти</button>
       </div>
       <div className="comicsContainer">
         {comics.map((comic, index) => (

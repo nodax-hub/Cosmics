@@ -58,6 +58,8 @@
 .button,
 .loginButton,
 .registerButton,
+.profileButton,
+.logoutButton,
 .buyButton,
 .editSaveButton,
 .contactButton,
@@ -78,6 +80,8 @@
 .button:hover,
 .loginButton:hover,
 .registerButton:hover,
+.profileButton:hover,
+.logoutButton:hover,
 .buyButton:hover,
 .editSaveButton:hover,
 .contactButton:hover,
@@ -89,4 +93,20 @@
 .authButtons {
   display: flex;
   gap: 10px; /* Расстояние между кнопками */
+}
+
+.profileButton {
+  text-decoration: none;
+  color: white;
+  background: linear-gradient(135deg, #6e8efb, #a777e3);
+  border-radius: 12px;
+  font-size: 20px;
+  padding: 12px 25px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+.profileButton:hover {
+  background: linear-gradient(135deg, #5d7efb, #9066e3);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }

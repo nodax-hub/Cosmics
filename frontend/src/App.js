@@ -1,4 +1,5 @@
-import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Header from './Header';
 import MainContent from './MainContent';
 import AboutUs from './AboutUs';
@@ -11,29 +12,36 @@ import ContactForm from './ContactForm';
 import Admin from "./Admin";
 import './App.css';
 
-const AppContent = () => {
-  const location = useLocation();
-
-  return (
-    <div className="App">
-      <div className="background">
-        <div className="stars-container"></div>
-      </div>
-      {location.pathname !== '/profile' && <Header />}
-      <Routes>
-        <Route path="/" element={<><MainContent /><AboutUs /><WorkWithUs /><Shop /><ContactForm /><Footer /></>} />
-        <Route path="/profile" element={<UserProfile />} />
-        <Route path="/admin" element={<Admin />} />
-        <Route path="*" element={<Error />} />
-      </Routes>
-    </div>
-  );
-};
-
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setIsAuthenticated(false);
+    // Перенаправление на главную страницу после выхода будет выполнено внутри компонента Header
+  };
+
   return (
     <Router>
-      <AppContent />
+      <Header isAuthenticated={isAuthenticated} onLogout={handleLogout} />
+      <div className="App">
+        <div className="background">
+          <div className="stars-container"></div>
+        </div>
+        <Routes>
+          <Route path="/" element={<><MainContent /><AboutUs /><WorkWithUs /><Shop /><ContactForm /><Footer /></>} />
+          <Route path="/profile" element={<UserProfile />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="*" element={<Error />} />
+        </Routes>
+      </div>
     </Router>
   );
 }

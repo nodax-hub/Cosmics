@@ -1,8 +1,6 @@
-// LoginForm.js
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import Draggable from 'react-draggable';
 import './LoginForm.css';
 
 const LoginForm = ({ isVisible, onClose }) => {
@@ -13,6 +11,7 @@ const LoginForm = ({ isVisible, onClose }) => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+
     try {
       const response = await fetch('http://localhost:8000/auth/token/login/', {
         method: 'POST',
@@ -29,7 +28,8 @@ const LoginForm = ({ isVisible, onClose }) => {
         setTimeout(() => {
           onClose();
           setMessage('');
-          navigate('/profile');
+          navigate('/profile'); // Перенаправление на страницу профиля после успешного входа
+          window.location.reload(); // Обновление страницы для принудительного обновления Header
         }, 2000);
       } else {
         alert('Ошибка входа: ' + JSON.stringify(data));
@@ -44,36 +44,34 @@ const LoginForm = ({ isVisible, onClose }) => {
 
   return (
     <div className="loginOverlay">
-      <Draggable handle=".handle">
-        <div className="loginForm">
-          <div className="handle">
-            <button className="closeButton" onClick={onClose}>×</button>
-            <h2 style={{ margin: '0 auto' }}>Вход в систему</h2>
-          </div>
-          {message && <div className="successMessage">{message}</div>}
-          <form onSubmit={handleLogin}>
-            <input
-              type="email"
-              name="authEmail"
-              required
-              className="inputField"
-              placeholder="Email"
-              value={authEmail}
-              onChange={(e) => setAuthEmail(e.target.value)}
-            />
-            <input
-              type="password"
-              name="authPassword"
-              required
-              className="inputField"
-              placeholder="Пароль"
-              value={authPassword}
-              onChange={(e) => setAuthPassword(e.target.value)}
-            />
-            <button type="submit" className="button">Войти</button>
-          </form>
+      <div className="loginForm">
+        <div className="handle">
+          <button className="closeButton" onClick={onClose}>×</button>
+          <h2 style={{ margin: '0 auto' }}>Вход в систему</h2>
         </div>
-      </Draggable>
+        {message && <div className="successMessage">{message}</div>}
+        <form onSubmit={handleLogin}>
+          <input
+            type="email"
+            name="authEmail"
+            required
+            className="inputField"
+            placeholder="Email"
+            value={authEmail}
+            onChange={(e) => setAuthEmail(e.target.value)}
+          />
+          <input
+            type="password"
+            name="authPassword"
+            required
+            className="inputField"
+            placeholder="Пароль"
+            value={authPassword}
+            onChange={(e) => setAuthPassword(e.target.value)}
+          />
+          <button type="submit" className="button">Войти</button>
+        </form>
+      </div>
     </div>
   );
 };
