@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import List, Literal
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_jwt_auth import AuthJWT
@@ -29,22 +29,18 @@ app.add_middleware(
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-
 class Settings(BaseModel):
     authjwt_secret_key: str = "secret"
-
 
 @AuthJWT.load_config
 def get_config():
     return Settings()
 
-
 @app.exception_handler(AuthJWTException)
 def authjwt_exception_handler(request, exc):
     return HTTPException(status_code=exc.status_code, detail=exc.message)
 
-
-# Dependency
+# Dependency for getting DB session
 def get_db():
     db = SessionLocal()
     try:
@@ -52,17 +48,18 @@ def get_db():
     finally:
         db.close()
 
+# Зависимость для проверки JWT и получения текущего пользователя
+def get_current_user(Authorize: AuthJWT = Depends(), db: Session = Depends(get_db)):
+    try:
+        Authorize.jwt_required()
+    except AuthJWTException as e:
+        raise HTTPException(status_code=401, detail="Unauthorized")
 
-@app.post("/users/", response_model=schemas.User)
-def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    db_user = crud.get_user_by_email(db, email=user.email)
-    if db_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
-    db_user = crud.get_user_by_login(db, login=user.login)
-    if db_user:
-        raise HTTPException(status_code=400, detail="Login already registered")
-    return crud.create_user(db=db, user=user)
-
+    user_email = Authorize.get_jwt_subject()
+    user = crud.get_user_by_email(db, email=user_email)
+    if user is None:
+        raise HTTPException(status_code=401, detail="User not found")
+    return user
 
 @app.post("/auth/token/login/")
 def login(user: schemas.UserLogin, db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
@@ -72,36 +69,25 @@ def login(user: schemas.UserLogin, db: Session = Depends(get_db), Authorize: Aut
     access_token = Authorize.create_access_token(subject=user.email)
     return {"access_token": access_token}
 
+# Пример маршрута, доступного только авторизованным пользователям
+@app.get("/users/me", response_model=schemas.User)
+def read_users_me(current_user: schemas.User = Depends(get_current_user)):
+    return current_user
 
-@app.get("/users/", response_model=list[schemas.User])
-def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return crud.get_users(db, skip=skip, limit=limit)
-
-
-@app.get("/users/{user_id}", response_model=schemas.User)
-def read_user(user_id: int, db: Session = Depends(get_db)):
-    db_user = crud.get_user(db, user_id=user_id)
-    if db_user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    return db_user
-
-
+# Пример маршрута для создания комикса, доступного только авторизованным пользователям
 @app.post("/comic_books/", response_model=schemas.ComicBook)
 def create_comic_book(
-        comic_book: schemas.ComicBookCreate, db: Session = Depends(get_db)
+        comic_book: schemas.ComicBookCreate, db: Session = Depends(get_db), current_user: schemas.User = Depends(get_current_user)
 ):
     return crud.create_comic_book(db=db, comic_book=comic_book)
 
-
-@app.get("/comic_books/", response_model=list[schemas.ComicBook])
+@app.get("/comic_books/", response_model=List[schemas.ComicBook])
 def read_comic_books(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return crud.get_comic_books(db, skip=skip, limit=limit)
-
 
 @app.get("/comic_books/search_by", response_model=schemas.ComicBook)
 def read_comic_book(attr: Literal['id', 'title', 'author', 'genre'], val, db: Session = Depends(get_db)):
     return crud.get_comic_book_by_attribute(db, **{attr: val})
-
 
 if __name__ == '__main__':
     import uvicorn
