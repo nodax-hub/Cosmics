@@ -1,3 +1,4 @@
+/* Header.css */
 
 .header-top {
   display: flex;
@@ -56,6 +57,7 @@
 
 .button,
 .loginButton,
+.registerButton,
 .buyButton,
 .editSaveButton,
 .contactButton,
@@ -75,10 +77,16 @@
 
 .button:hover,
 .loginButton:hover,
+.registerButton:hover,
 .buyButton:hover,
 .editSaveButton:hover,
 .contactButton:hover,
 .submitButton:hover {
   background: linear-gradient(135deg, #5d7efb, #9066e3);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.authButtons {
+  display: flex;
+  gap: 10px; /* Расстояние между кнопками */
 }

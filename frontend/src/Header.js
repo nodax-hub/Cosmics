@@ -1,13 +1,21 @@
+// Header.js
 import { useState } from 'react';
 import './Header.css';
 import LoginForm from './LoginForm';
+import RegisterForm from './RegisterForm';
 
 const Header = () => {
   const [isLoginVisible, setLoginVisible] = useState(false);
+  const [isRegisterVisible, setRegisterVisible] = useState(false);
 
   const toggleLoginForm = () => {
     setLoginVisible(!isLoginVisible);
-    console.log("LoginForm visibility: ", !isLoginVisible);
+    setRegisterVisible(false); // Закрыть форму регистрации при открытии формы входа
+  };
+
+  const toggleRegisterForm = () => {
+    setRegisterVisible(!isRegisterVisible);
+    setLoginVisible(false); // Закрыть форму входа при открытии формы регистрации
   };
 
   const scrollToSection = (sectionId) => {
@@ -23,7 +31,10 @@ const Header = () => {
         <div className="logo">
           <h1 className="headerTitle">COSMICS</h1>
         </div>
-        <button className="loginButton" onClick={toggleLoginForm}>Мой мир</button>
+        <div className="authButtons">
+          <button className="loginButton" onClick={toggleLoginForm}>Войти</button>
+          <button className="registerButton" onClick={toggleRegisterForm}>Регистрация</button>
+        </div>
       </div>
       <div className="header-bottom">
         <nav className="navigation">
@@ -34,6 +45,7 @@ const Header = () => {
         </nav>
       </div>
       <LoginForm isVisible={isLoginVisible} onClose={toggleLoginForm} />
+      <RegisterForm isVisible={isRegisterVisible} onClose={toggleRegisterForm} />
     </header>
   );
 };
