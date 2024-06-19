@@ -1,20 +1,40 @@
-import { useState } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import './UserProfile.css';
 import profile from './Images/профиль.jpg';
-
+import { UserContext } from './context/UserContext';
 
 const UserProfile = () => {
-  const [user, setUser] = useState({
-    firstName: 'Михаил',
-    lastName: 'Иванов',
-    email: 'm.sok@gmail.com',
-  });
-
-  const orders = [
-    { id: 1, name: '15.04.2024', status: 'Доставлен' },
-  ];
-
+  const [user, setUser] = useState(null);
+  const [orders, ] = useState([]); // Для примера
   const [editing, setEditing] = useState(false);
+  const [token] = useContext(UserContext);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch('http://localhost:8000/api/users/me', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`, // Используем токен для аутентификации
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Ошибка при получении данных пользователя');
+        }
+
+        const userData = await response.json();
+        setUser(userData);
+      } catch (error) {
+        console.error('Ошибка:', error);
+        alert('Не удалось загрузить данные пользователя');
+      }
+    };
+
+    if (token) {
+      fetchUser();
+    }
+  }, [token]);
 
   const handleEdit = () => {
     setEditing(true);
@@ -29,6 +49,10 @@ const UserProfile = () => {
     setUser({ ...user, [e.target.name]: e.target.value });
   };
 
+  if (!user) {
+    return <div>Загрузка...</div>; // Показать загрузку, пока данные пользователя не загружены
+  }
+
   return (
     <div className="userProfile">
       <div className="userDetails">
@@ -40,46 +64,46 @@ const UserProfile = () => {
                 <input
                   type="text"
                   name="firstName"
-                  value={user.firstName}
+                  value={user.first_name}
                   onChange={handleChange}
                   placeholder="Имя"
                 />
                 <input
                   type="text"
                   name="lastName"
-                  value={user.lastName}
+                  value={user.last_name}
                   onChange={handleChange}
                   placeholder="Фамилия"
                 />
               </>
             ) : (
-              <span>{user.firstName} {user.lastName}</span>
+              <span>{user.first_name} {user.last_name}</span>
             )}
           </div>
           <form className="userForm">
             <div className="contactInfo">
               {editing ? (
-                  <input
-                      type="email"
-                      name="email"
-                      value={user.email}
-                      onChange={handleChange}
-                      placeholder="Email"
-                  />
+                <input
+                  type="email"
+                  name="email"
+                  value={user.email}
+                  onChange={handleChange}
+                  placeholder="Email"
+                />
               ) : (
-                  <span>{user.email}</span>
+                <span>{user.email}</span>
               )}
             </div>
             <a href="http://localhost:3000" className="editSaveButton">На главную</a>
             {!editing && (
-                <div className="editSave">
-                  <button type="button" className="editSaveButton" onClick={handleEdit}>Редактировать</button>
-                </div>
+              <div className="editSave">
+                <button type="button" className="editSaveButton" onClick={handleEdit}>Редактировать</button>
+              </div>
             )}
             {editing && (
-                <div className="editSave">
-                  <button type="button" className="editSaveButton" onClick={handleSave}>Сохранить</button>
-                </div>
+              <div className="editSave">
+                <button type="button" className="editSaveButton" onClick={handleSave}>Сохранить</button>
+              </div>
             )}
           </form>
         </div>

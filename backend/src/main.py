@@ -1,9 +1,11 @@
 from typing import List, Literal
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_jwt_auth import AuthJWT
 from fastapi_jwt_auth.exceptions import AuthJWTException
 from pydantic import BaseModel
+from fastapi.security import OAuth2PasswordBearer
+
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 
@@ -47,6 +49,17 @@ def get_db():
         yield db
     finally:
         db.close()
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+def get_user_by_token(token: str, db: Session = Depends(get_db)):
+    user = crud.get_user_by_token(db, token)
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication credentials",
+        )
+    return user
 
 @app.post("/users/", response_model=schemas.User)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):

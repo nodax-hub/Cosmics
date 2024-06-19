@@ -7,23 +7,21 @@ class Role(str, Enum):
     customer = "customer"
     admin = "admin"
 
-
 class UserBase(BaseModel):
     email: str
-
-
-class UserCreate(UserBase):
-    password: str
+class UserInfo(UserBase):
     login: str
     first_name: str
     last_name: str
 
+class UserCreate(UserInfo):
+    password: str
 
 class UserLogin(UserBase):
     password: str
 
 
-class User(UserBase):
+class User(UserInfo):
     id: int
     role: Role
 
