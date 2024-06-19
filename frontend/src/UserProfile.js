@@ -1,16 +1,22 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useRef } from 'react';
 import './UserProfile.css';
 import profile from './Images/профиль.jpg';
 import { UserContext } from './context/UserContext';
+import { useNavigate } from 'react-router-dom';
 
 const UserProfile = () => {
   const [user, setUser] = useState(null);
-  const [orders, ] = useState([]); // Для примера
+  const [orders] = useState([]); // Для примера
   const [editing, setEditing] = useState(false);
   const [token] = useContext(UserContext);
+  const navigate = useNavigate();
+  const hasFetched = useRef(false); // Используем useRef для предотвращения повторного вызова
 
   useEffect(() => {
+    if (hasFetched.current) return; // Если уже выполнено, не делаем повторный вызов
+
     const fetchUser = async () => {
+      console.log('Fetching user data'); // Диагностика
       try {
         const response = await fetch('http://localhost:8000/api/users/me', {
           method: 'GET',
@@ -20,6 +26,11 @@ const UserProfile = () => {
         });
 
         if (!response.ok) {
+          if (response.status === 401) {
+            alert('Требуется авторизация. Пожалуйста, войдите снова.');
+            navigate('/login');
+            return;
+          }
           throw new Error('Ошибка при получении данных пользователя');
         }
 
@@ -33,16 +44,37 @@ const UserProfile = () => {
 
     if (token) {
       fetchUser();
+      hasFetched.current = true; // Помечаем, что вызов был выполнен
     }
-  }, [token]);
+  }, [token, navigate]);
 
   const handleEdit = () => {
     setEditing(true);
   };
 
-  const handleSave = () => {
-    setEditing(false);
-    // Логика сохранения изменений
+  const handleSave = async () => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/users/me`, {
+        method: 'PUT', // Используем метод PUT для обновления данных
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`, // Используем токен для аутентификации
+        },
+        body: JSON.stringify(user), // Отправляем обновленные данные пользователя
+      });
+
+      if (!response.ok) {
+        throw new Error('Ошибка при обновлении данных пользователя');
+      }
+
+      const updatedUser = await response.json();
+      setUser(updatedUser); // Обновляем состояние с новыми данными пользователя
+      setEditing(false); // Завершаем режим редактирования
+      alert('Данные успешно обновлены');
+    } catch (error) {
+      console.error('Ошибка:', error);
+      alert('Не удалось сохранить данные пользователя');
+    }
   };
 
   const handleChange = (e) => {
@@ -63,14 +95,16 @@ const UserProfile = () => {
               <>
                 <input
                   type="text"
-                  name="firstName"
+                  name="first_name"
+                  className="inputField"
                   value={user.first_name}
                   onChange={handleChange}
                   placeholder="Имя"
                 />
                 <input
                   type="text"
-                  name="lastName"
+                  name="last_name"
+                  className="inputField"
                   value={user.last_name}
                   onChange={handleChange}
                   placeholder="Фамилия"
@@ -83,18 +117,35 @@ const UserProfile = () => {
           <form className="userForm">
             <div className="contactInfo">
               {editing ? (
-                <input
-                  type="email"
-                  name="email"
-                  value={user.email}
-                  onChange={handleChange}
-                  placeholder="Email"
-                />
+                <>
+                  <input
+                    type="text"
+                    name="login"
+                    className="inputField"
+                    value={user.login}
+                    onChange={handleChange}
+                    placeholder="Логин"
+                  />
+                  <input
+                    type="email"
+                    name="email"
+                    className="inputField"
+                    value={user.email}
+                    onChange={handleChange}
+                    placeholder="Email"
+                  />
+                </>
               ) : (
-                <span>{user.email}</span>
+                <span>{user.login} - {user.email}</span>
               )}
             </div>
-            <a href="http://localhost:3000" className="editSaveButton">На главную</a>
+            <button
+              type="button"
+              className="editSaveButton"
+              onClick={() => navigate('/')}
+            >
+              К выбору!
+            </button> {/* Изменена кнопка */}
             {!editing && (
               <div className="editSave">
                 <button type="button" className="editSaveButton" onClick={handleEdit}>Редактировать</button>
