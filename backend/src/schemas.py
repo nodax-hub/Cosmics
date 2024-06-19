@@ -84,8 +84,18 @@ class ComicBookCreate(ComicBookBase):
     pass
 
 
-class ComicBook(ComicBookBase):
+class ComicBook(BaseModel):
     id: int
+    title: str
+    author: str
+    publisher: str
+    stock_quantity: int
+    description: str
+    genre: str
+    price: float
+
+    class Config:
+        orm_mode = True
 
 class ComicBookResponse(BaseModel):
     id: int

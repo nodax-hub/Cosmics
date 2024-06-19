@@ -128,9 +128,18 @@ def read_comic_books(skip: int = 0, limit: int = 100, db: Session = Depends(get_
 def read_comics(db: Session = Depends(get_db)):
     comics = db.query(ComicBook).all()
     return comics
-@app.get("/comic_books/search_by", response_model=schemas.ComicBook)
-def read_comic_book(attr: Literal['id', 'title', 'author', 'genre'], val, db: Session = Depends(get_db)):
-    return crud.get_comic_book_by_attribute(db, **{attr: val})
+
+
+# Новый эндпоинт для получения информации о комиксе по id
+@app.get("/comic_books/{id}", response_model=schemas.ComicBook)
+def read_comic_book(id: int, db: Session = Depends(get_db)):
+    comic_book = crud.get_comic_book_by_id(db, comic_id=id)
+    if comic_book is None:
+        raise HTTPException(status_code=404, detail="Comic not found")
+    return comic_book
+
+
+
 
 if __name__ == '__main__':
     import uvicorn

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Slider from 'react-slick';
-import './Shop.css'; // Импорт CSS стилей
+import Modal from './Modal'; // Импорт компонента модального окна
+import './Shop.css';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
@@ -8,6 +9,8 @@ const ShopPage = () => {
   const [comics, setComics] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedComic, setSelectedComic] = useState(null);
 
   useEffect(() => {
     // Функция для загрузки данных о комиксах
@@ -35,6 +38,29 @@ const ShopPage = () => {
 
     fetchComics();
   }, []);
+
+  const fetchComicDetails = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/comic_books/${id}`);
+      if (!response.ok) {
+        throw new Error('Ошибка сети или сервер вернул некорректный ответ');
+      }
+      const data = await response.json();
+      setSelectedComic(data);
+      setShowModal(true);
+    } catch (error) {
+      console.error('Ошибка при загрузке подробной информации о комиксе:', error);
+    }
+  };
+
+  const handleCardClick = (comicId) => {
+    fetchComicDetails(comicId);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedComic(null);
+  };
 
   const settings = {
     dots: true,
@@ -78,8 +104,7 @@ const ShopPage = () => {
       <h2 id="shop" className="Title">Журналы</h2>
       <Slider {...settings}>
         {comics.map((comic) => (
-          <div key={comic.id} className="shopCard">
-            {/* Используем путь из папки public */}
+          <div key={comic.id} className="shopCard" onClick={() => handleCardClick(comic.id)}>
             <img src={`/comics/${comic.id}.jpg`} alt={comic.title} className="productImage" />
             <div className="info">
               <p>{comic.title}</p>
@@ -89,6 +114,13 @@ const ShopPage = () => {
           </div>
         ))}
       </Slider>
+      {selectedComic && (
+        <Modal
+          show={showModal}
+          onClose={handleCloseModal}
+          comic={selectedComic}
+        />
+      )}
     </div>
   );
 };

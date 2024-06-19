@@ -18,6 +18,12 @@ def get_user_by_login(db: Session, login: str):
 def get_comic_book_by_attribute(db: Session, **kwargs):
     return db.query(models.ComicBook).filter_by(**kwargs).first()
 
+# crud.py
+
+
+def get_comic_book_by_id(db: Session, comic_id: int):
+    return db.query(models.ComicBook).filter(models.ComicBook.id == comic_id).first()
+
 def get_users(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.User).offset(skip).limit(limit).all()
 
