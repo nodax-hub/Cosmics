@@ -10,18 +10,14 @@ def get_user(db: Session, user_id: int):
     return db.query(models.User).filter(models.User.id == user_id).first()
 
 
-def get_user_by_email(db: Session, email: str) -> models.User:
+def get_user_by_email(db: Session, email: str):
     return db.query(models.User).filter(models.User.email == email).first()
+
 
 
 def get_user_by_login(db: Session, login: str):
     return db.query(models.User).filter(models.User.login == login).first()
 
-
-def get_comic_book_by_id(db: Session, id: int):
-    comic = db.query(models.ComicBook).filter(models.ComicBook.id == id).first()
-    print(f"Comic book: {comic}")
-    return comic
 
 
 def get_comic_book_by_attribute(db: Session, **kwargs):

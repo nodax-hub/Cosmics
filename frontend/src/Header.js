@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import './Header.css';
-import {useContext, useState} from 'react';
-import {Link, useLocation, useNavigate} from 'react-router-dom'; // Импортируем useLocation для определения текущего пути
+import {useContext, useEffect, useState} from 'react';
+import {useLocation, useNavigate} from 'react-router-dom'; // Импортируем useLocation для определения текущего пути
 import LoginForm from './LoginForm';
 import RegisterForm from './RegisterForm';
 import {UserContext} from './context/UserContext';
@@ -9,9 +9,36 @@ import {UserContext} from './context/UserContext';
 const Header = ({onLogout}) => {
     const [isLoginVisible, setLoginVisible] = useState(false);
     const [isRegisterVisible, setRegisterVisible] = useState(false);
+    const [userRole, setUserRole] = useState(null); // Добавляем состояние для роли пользователя
     const navigate = useNavigate();
     const [token, setToken] = useContext(UserContext);
     const location = useLocation(); // Получаем текущий путь
+
+    useEffect(() => {
+        const fetchUserRole = async () => {
+            if (token) {
+                try {
+                    const response = await fetch('http://localhost:8000/api/users/me', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        setUserRole(data.role);
+                    } else {
+                        console.error('Ошибка получения данных пользователя:', response.statusText);
+                    }
+                } catch (error) {
+                    console.error('Ошибка:', error);
+                }
+            }
+        };
+
+        fetchUserRole();
+    }, [token]);
 
     const toggleLoginForm = () => {
         setLoginVisible(!isLoginVisible);
@@ -33,15 +60,25 @@ const Header = ({onLogout}) => {
     // Определяем, нужно ли скрыть навигационные элементы
     const hideNavigation = location.pathname.includes('/profile') || location.pathname.includes('/admin');
 
+    const handleProfileClick = () => {
+        if (userRole === 'admin') {
+            navigate('/admin');
+        } else {
+            navigate('/profile');
+        }
+    };
+
     return (
         <header>
             <div className="header-top">
                 <div className="logo">
-                    <a href="/"><h1 className="headerTitle">COSMICS</h1></a>
+                    <h1 className="headerTitle">COSMICS</h1>
                 </div>
                 {token ? (
                     <div className="authButtons">
-                        <Link to="/profile" className="profileButton">Профиль</Link>
+                        <button className="profileButton" onClick={handleProfileClick}>
+                            {userRole === 'admin' && location.pathname === '/admin' ? 'Админ' : 'Профиль'}
+                        </button>
                         <button className="logoutButton" onClick={handleLogoutClick}>Выход</button>
                     </div>
                 ) : (

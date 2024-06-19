@@ -29,7 +29,6 @@ app.add_middleware(
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-
 @app.exception_handler(AuthJWTException)
 def authjwt_exception_handler(request, exc):
     return HTTPException(status_code=exc.status_code, detail=exc.message)
@@ -56,10 +55,10 @@ async def generate_token(
         db: Session = Depends(get_db),
 ):
     user = await services.authenticate_user(form_data.username, form_data.password, db)
-    
+
     if not user:
         raise HTTPException(status_code=401, detail="Invalid Credentials")
-    
+
     return await services.create_token(user)
 
 
@@ -76,7 +75,7 @@ def update_current_user(
 ):
     if user_update.password:
         user_update.password = pwd_context.hash(user_update.password)
-    
+
     updated_user = crud.update_user(db, user_id=current_user.id, user_update=user_update)
     if not updated_user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -105,7 +104,9 @@ def read_comic_book(id: int, db: Session = Depends(get_db)):
     return comic_book
 
 
+
+
 if __name__ == '__main__':
     import uvicorn
-    
+
     uvicorn.run(app, host="127.0.0.1", port=8000)
