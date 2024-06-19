@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import Slider from 'react-slick';
 import Modal from './Modal'; // Импорт компонента модального окна
 import './Shop.css';
@@ -11,7 +11,8 @@ const ShopPage = () => {
     const [error, setError] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [selectedComic, setSelectedComic] = useState(null);
-    const [cartCount, setCartCount] = useState(0); // Состояние для количества товаров в корзине
+    const [cartCount, setCartCount] = useState(0);
+    const [cart, setCart] = useState([]); // Состояние для корзины
 
     useEffect(() => {
         const fetchComics = async () => {
@@ -60,16 +61,59 @@ const ShopPage = () => {
     const handleBuyClick = (e, comic) => {
         e.stopPropagation(); // Предотвращаем всплытие события клика
         console.log('Покупка комикса:', comic);
-        setCartCount(cartCount + 1); // Увеличиваем количество товаров в корзине
+
+        // Добавляем комикс в корзину
+        setCart((prevCart) => {
+            const existingComic = prevCart.find(item => item.comic_book_id === comic.id);
+            if (existingComic) {
+                return prevCart.map(item =>
+                    item.comic_book_id === comic.id
+                        ? { ...item, quantity: item.quantity + 1 }
+                        : item
+                );
+            }
+            return [...prevCart, { comic_book_id: comic.id, quantity: 1 }];
+        });
+
+        setCartCount(cartCount + 1);
+    };
+
+    const handlePlaceOrder = async () => {
+        try {
+            const response = await fetch('http://localhost:8000/api/users/orders/create_order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: JSON.stringify({ sales: cart })
+            });
+
+            if (!response.ok) {
+                throw new Error('Ошибка при оформлении заказа');
+            }
+
+            const orderData = await response.json();
+            console.log('Заказ успешно создан:', orderData);
+
+            // Очищаем корзину после успешного оформления заказа
+            setCart([]);
+            setCartCount(0);
+            alert('Ваш заказ успешно оформлен!');
+        } catch (error) {
+            console.error('Ошибка при оформлении заказа:', error);
+            alert('Не удалось оформить заказ. Пожалуйста, попробуйте еще раз.');
+        }
+    };
+
+    const handleClearCart = () => {
+        setCart([]);
+        setCartCount(0);
     };
 
     const handleCloseModal = () => {
         setShowModal(false);
         setSelectedComic(null);
-    };
-
-    const handleClearCart = () => {
-        setCartCount(0); // Очистка корзины
     };
 
     const settings = {
@@ -137,8 +181,8 @@ const ShopPage = () => {
                 />
             )}
             <div className="shopControls">
-                <button className="cartButton">
-                    🛒 {cartCount}
+                <button className="cartButton" onClick={handlePlaceOrder}>
+                    Оформить заказ 🛒 {cartCount}
                 </button>
                 <button className="clearButton" onClick={handleClearCart}>
                     ❌
