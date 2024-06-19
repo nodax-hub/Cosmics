@@ -11,6 +11,7 @@ const ShopPage = () => {
     const [error, setError] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [selectedComic, setSelectedComic] = useState(null);
+    const [cartCount, setCartCount] = useState(0); // Состояние для количества товаров в корзине
 
     useEffect(() => {
         const fetchComics = async () => {
@@ -59,12 +60,16 @@ const ShopPage = () => {
     const handleBuyClick = (e, comic) => {
         e.stopPropagation(); // Предотвращаем всплытие события клика
         console.log('Покупка комикса:', comic);
-        // Добавьте логику для обработки покупки здесь
+        setCartCount(cartCount + 1); // Увеличиваем количество товаров в корзине
     };
 
     const handleCloseModal = () => {
         setShowModal(false);
         setSelectedComic(null);
+    };
+
+    const handleClearCart = () => {
+        setCartCount(0); // Очистка корзины
     };
 
     const settings = {
@@ -131,6 +136,14 @@ const ShopPage = () => {
                     comic={selectedComic}
                 />
             )}
+            <div className="shopControls">
+                <button className="cartButton">
+                    🛒 {cartCount}
+                </button>
+                <button className="clearButton" onClick={handleClearCart}>
+                    ❌
+                </button>
+            </div>
         </div>
     );
 };

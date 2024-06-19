@@ -49,3 +49,35 @@
 .buyButton:hover {
     background-color: #0056b3;
 }
+
+/* Контейнер для кнопок управления под слайдером */
+.shopControls {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+/* Настройки для кнопок корзины и очистки */
+.cartButton, .clearButton {
+    font-size: 24px;
+    padding: 10px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: transform 0.2s;
+}
+
+.cartButton:hover, .clearButton:hover {
+    transform: scale(1.1);
+}
+
+.cartButton {
+    display: flex;
+    align-items: center;
+    color: #fff; /* Цвет текста для кнопки корзины */
+}
+
+.clearButton {
+    color: red;
+}
