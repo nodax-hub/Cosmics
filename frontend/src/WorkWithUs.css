@@ -88,3 +88,10 @@
   border-radius: 50%;
   box-shadow: 0 0 2px white;
 }
+
+.message {
+  text-align: center;
+  color: green;
+  font-size: 1.2em;
+  margin: 10px 0;
+}

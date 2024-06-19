@@ -8,20 +8,20 @@ const UserProfile = () => {
   const [user, setUser] = useState(null);
   const [orders] = useState([]); // Для примера
   const [editing, setEditing] = useState(false);
-  const [token] = useContext(UserContext);
+  const [token, setToken] = useContext(UserContext);
   const navigate = useNavigate();
-  const hasFetched = useRef(false); // Используем useRef для предотвращения повторного вызова
+  const hasFetched = useRef(false);
 
   useEffect(() => {
-    if (hasFetched.current) return; // Если уже выполнено, не делаем повторный вызов
+    if (hasFetched.current) return;
 
     const fetchUser = async () => {
-      console.log('Fetching user data'); // Диагностика
+      console.log('Fetching user data');
       try {
         const response = await fetch('http://localhost:8000/api/users/me', {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${token}`, // Используем токен для аутентификации
+            'Authorization': `Bearer ${token}`,
           },
         });
 
@@ -44,7 +44,7 @@ const UserProfile = () => {
 
     if (token) {
       fetchUser();
-      hasFetched.current = true; // Помечаем, что вызов был выполнен
+      hasFetched.current = true;
     }
   }, [token, navigate]);
 
@@ -55,22 +55,40 @@ const UserProfile = () => {
   const handleSave = async () => {
     try {
       const response = await fetch(`http://localhost:8000/api/users/me`, {
-        method: 'PUT', // Используем метод PUT для обновления данных
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, // Используем токен для аутентификации
+          'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(user), // Отправляем обновленные данные пользователя
+        body: JSON.stringify(user),
       });
 
       if (!response.ok) {
-        throw new Error('Ошибка при обновлении данных пользователя');
+        if (response.status === 401) {
+          alert('Сессия истекла. Пожалуйста, войдите снова.');
+          setToken(null);
+          localStorage.removeItem('token');
+          navigate('/login');
+          return;
+        }
+        const errorData = await response.json();
+        alert(`Ошибка при обновлении данных: ${errorData.detail || response.statusText}`);
+        return;
       }
 
       const updatedUser = await response.json();
-      setUser(updatedUser); // Обновляем состояние с новыми данными пользователя
-      setEditing(false); // Завершаем режим редактирования
+      setUser(updatedUser);
+      setEditing(false);
       alert('Данные успешно обновлены');
+
+      // Проверим, вернулся ли новый токен и нужно ли его обновить
+      const newToken = response.headers.get('Authorization');
+      if (newToken && newToken !== token) {
+        setToken(newToken);
+        localStorage.setItem('token', newToken);
+        console.log('Токен обновлен');
+      }
+
     } catch (error) {
       console.error('Ошибка:', error);
       alert('Не удалось сохранить данные пользователя');
@@ -82,7 +100,7 @@ const UserProfile = () => {
   };
 
   if (!user) {
-    return <div>Загрузка...</div>; // Показать загрузку, пока данные пользователя не загружены
+    return <div>Загрузка...</div>;
   }
 
   return (
@@ -117,26 +135,16 @@ const UserProfile = () => {
           <form className="userForm">
             <div className="contactInfo">
               {editing ? (
-                <>
-                  <input
-                    type="text"
-                    name="login"
-                    className="inputField"
-                    value={user.login}
-                    onChange={handleChange}
-                    placeholder="Логин"
-                  />
-                  <input
-                    type="email"
-                    name="email"
-                    className="inputField"
-                    value={user.email}
-                    onChange={handleChange}
-                    placeholder="Email"
-                  />
-                </>
+                <input
+                  type="text"
+                  name="login"
+                  className="inputField"
+                  value={user.login}
+                  onChange={handleChange}
+                  placeholder="Логин"
+                />
               ) : (
-                <span>{user.login} - {user.email}</span>
+                <span>{user.login}</span>
               )}
             </div>
             <button
@@ -145,7 +153,7 @@ const UserProfile = () => {
               onClick={() => navigate('/')}
             >
               К выбору!
-            </button> {/* Изменена кнопка */}
+            </button>
             {!editing && (
               <div className="editSave">
                 <button type="button" className="editSaveButton" onClick={handleEdit}>Редактировать</button>

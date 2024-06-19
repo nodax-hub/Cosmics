@@ -50,6 +50,9 @@ def get_db():
     finally:
         db.close()
 
+
+
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 def get_user_by_token(token: str, db: Session = Depends(get_db)):
@@ -93,6 +96,19 @@ def login(user: schemas.UserLogin, db: Session = Depends(get_db), Authorize: Aut
 @app.get("/users/me", response_model=schemas.User)
 def read_users_me(current_user: schemas.User = Depends(get_current_user)):
     return current_user
+
+@app.put("/users/me", response_model=schemas.User)
+def update_current_user(
+    user_update: schemas.UserUpdate,
+    db: Session = Depends(get_db),
+    current_user: schemas.User = Depends(get_current_user)
+):
+    if user_update.password:
+        user_update.password = pwd_context.hash(user_update.password)
+    updated_user = crud.update_user(db, user_id=current_user.id, user_update=user_update)
+    if not updated_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return updated_user
 
 # Пример маршрута для создания комикса, доступного только авторизованным пользователям
 @app.post("/comic_books/", response_model=schemas.ComicBook)

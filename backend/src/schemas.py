@@ -20,6 +20,12 @@ class UserCreate(UserInfo):
 class UserLogin(UserBase):
     password: str
 
+class UserUpdate(BaseModel):
+    login: str | None = None
+    first_name: str | None = None
+    last_name: str | None = None
+    email: str | None = None
+    password: str | None = None
 
 class User(UserInfo):
     id: int
