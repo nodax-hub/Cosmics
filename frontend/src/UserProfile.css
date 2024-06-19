@@ -2,12 +2,13 @@
 
 /* Основной контейнер профиля */
 .userProfile {
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
     padding: 20px;
     background-color: #f9f9f9;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: 'Arial', sans-serif; /* Поддерживаем единый стиль шрифта */
 }
 
 /* Детали пользователя */
@@ -15,6 +16,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-bottom: 30px; /* Добавляем пространство между секциями */
 }
 
 /* Картинка профиля */
@@ -23,7 +25,7 @@
     height: 150px;
     border-radius: 50%;
     margin-bottom: 20px;
-    border: 2px solid #ccc;
+    border: 2px solid #ddd; /* Более мягкий цвет рамки */
 }
 
 /* Информация о пользователе */
@@ -32,8 +34,9 @@
 }
 
 .name {
-    font-size: 1.5em;
+    font-size: 1.8em;
     margin-bottom: 10px;
+    color: #333; /* Темный цвет для текста */
 }
 
 .userForm {
@@ -63,13 +66,13 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    background-color: #4CAF50;
+    background-color: #007bff; /* Синий цвет кнопки */
     color: white;
     transition: background-color 0.3s ease;
 }
 
 .editSaveButton:hover {
-    background-color: #45a049;
+    background-color: #0056b3; /* Темнее при наведении */
 }
 
 /* Секция заказов */
@@ -79,8 +82,10 @@
 }
 
 .orders h2 {
-    font-size: 1.2em;
-    margin-bottom: 10px;
+    font-size: 1.5em;
+    margin-bottom: 20px;
+    color: #007bff; /* Синий цвет заголовка */
+    text-align: center; /* Центрируем заголовок */
 }
 
 /* Карточка заказа */
@@ -88,10 +93,13 @@
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 10px;
-    padding: 15px;
-    margin-bottom: 10px;
+    padding: 20px;
+    margin-bottom: 15px;
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .order:hover {
@@ -101,42 +109,46 @@
 
 .order span {
     display: block;
-    margin-bottom: 5px;
+    font-size: 1em;
+    color: #333;
 }
 
-.order:last-child {
-    border-bottom: none;
+.order-id {
+    font-weight: bold;
 }
 
-/* Контейнер для слайдера заказов */
-.orderSlider {
-    margin-top: 20px;
-    padding: 20px;
-    background-color: #f0f0f0;
+.order-date,
+.order-status {
+    color: #555;
+}
+
+/* Модальное окно */
+.orderModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modalContent {
+    background: #fff;
+    padding: 30px;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Слайд комикса */
-.comicSlide {
-    text-align: center;
-}
-
-.comicImage {
+    max-width: 800px;
     width: 100%;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
 }
 
-.comicInfo {
-    margin-top: 10px;
-}
-
-/* Кнопка закрытия слайдера */
-.closeButton {
+.closeModalButton {
     display: block;
-    margin: 10px auto;
+    margin: 20px auto 0 auto;
     padding: 10px 20px;
     background-color: #007bff;
     color: white;
@@ -146,6 +158,45 @@
     transition: background-color 0.3s;
 }
 
-.closeButton:hover {
-    background: #00c8ff;
+.closeModalButton:hover {
+    background-color: #0056b3;
+}
+
+/* Контейнер для слайдера заказов */
+.orderSlider {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Слайд комикса */
+.comicSlide {
+    text-align: center;
+    padding: 10px;
+}
+
+.comicImage {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.comicInfo {
+    margin-top: 10px;
+}
+
+/* Дополнительные стили для улучшения визуального восприятия */
+.userProfile h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+.userProfile p {
+    color: #666;
 }

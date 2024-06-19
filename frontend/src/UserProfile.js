@@ -11,6 +11,7 @@ const UserProfile = () => {
     const [user, setUser] = useState(null);
     const [orders, setOrders] = useState([]);
     const [selectedOrder, setSelectedOrder] = useState(null);
+    const [showModal, setShowModal] = useState(false);
     const [editing, setEditing] = useState(false);
     const [token, setToken] = useContext(UserContext);
     const navigate = useNavigate();
@@ -96,12 +97,14 @@ const UserProfile = () => {
 
             const data = await response.json();
             setSelectedOrder(data);
+            setShowModal(true); // Показываем модальное окно при выборе заказа
         } catch (error) {
             console.error('Ошибка:', error.message);
         }
     };
 
-    const handleCloseSlider = () => {
+    const handleCloseModal = () => {
+        setShowModal(false);
         setSelectedOrder(null);
     };
 
@@ -236,33 +239,35 @@ const UserProfile = () => {
             <div className="orders">
                 {orders.map((order) => (
                     <div key={order.id} className="order" onClick={() => handleOrderClick(order)}>
-                        <span>ID заказа: {order.id}</span>
-                        <span>Дата: {order.order_date}</span>
-                        <span>Статус: {order.status}</span>
+                        <span className="order-id">ID заказа: {order.id}</span>
+                        <span className="order-date">Дата: {order.order_date}</span>
+                        <span className="order-status">Статус: {order.status}</span>
                     </div>
                 ))}
             </div>
-            {selectedOrder && (
-                <div className="orderSlider">
-                    <h3>Комиксы в заказе:</h3>
-                    <Slider {...sliderSettings(selectedOrder.length)}>
-                        {selectedOrder.map((sale) => (
-                            <div key={sale.comic_book_id} className="comicSlide">
-                                <img src={`/comics/${sale.comic_book_id}.jpg`} alt={sale.comic_book_id}
-                                    className="comicImage" />
-                                <div className="comicInfo">
-                                    {user.role === 'admin' && <p>Owner email: {sale.order.user.email}</p>}
-                                    <p>Название: {sale.comic_book.title}</p>
-                                    <p>Автор: {sale.comic_book.author}</p>
-                                    <p>Издатель: {sale.comic_book.publisher}</p>
-                                    <p>Количество: {sale.quantity}</p>
-                                    <p>Цена за штуку: {sale.comic_book.price}</p>
-                                    <p>Цена Итого: {sale.quantity * sale.comic_book.price}</p>
+            {showModal && selectedOrder && (
+                <div className="orderModal">
+                    <div className="modalContent">
+                        <h3>Комиксы в заказе:</h3>
+                        <Slider {...sliderSettings(selectedOrder.length)}>
+                            {selectedOrder.map((sale) => (
+                                <div key={sale.comic_book_id} className="comicSlide">
+                                    <img src={`/comics/${sale.comic_book_id}.jpg`} alt={sale.comic_book_id}
+                                        className="comicImage" />
+                                    <div className="comicInfo">
+                                        {user.role === 'admin' && <p>Owner email: {sale.order.user.email}</p>}
+                                        <p>Название: {sale.comic_book.title}</p>
+                                        <p>Автор: {sale.comic_book.author}</p>
+                                        <p>Издатель: {sale.comic_book.publisher}</p>
+                                        <p>Количество: {sale.quantity}</p>
+                                        <p>Цена за штуку: {sale.comic_book.price}</p>
+                                        <p>Цена Итого: {sale.quantity * sale.comic_book.price}</p>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                    </Slider>
-                    <button className="closeButton" onClick={handleCloseSlider}>Закрыть</button>
+                            ))}
+                        </Slider>
+                        <button className="closeModalButton" onClick={handleCloseModal}>Закрыть</button>
+                    </div>
                 </div>
             )}
         </div>
