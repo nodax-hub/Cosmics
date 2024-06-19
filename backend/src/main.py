@@ -10,6 +10,9 @@ from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 
 from backend.src import crud, models, schemas
+from .models import ComicBook  # Изменен путь импорта на относительный
+
+from .schemas import ComicBookResponse
 from backend.src.database import SessionLocal, engine
 
 models.Base.metadata.create_all(bind=engine)
@@ -121,6 +124,10 @@ def create_comic_book(
 def read_comic_books(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return crud.get_comic_books(db, skip=skip, limit=limit)
 
+@app.get("/comics", response_model=list[ComicBookResponse])
+def read_comics(db: Session = Depends(get_db)):
+    comics = db.query(ComicBook).all()
+    return comics
 @app.get("/comic_books/search_by", response_model=schemas.ComicBook)
 def read_comic_book(attr: Literal['id', 'title', 'author', 'genre'], val, db: Session = Depends(get_db)):
     return crud.get_comic_book_by_attribute(db, **{attr: val})

@@ -150,7 +150,7 @@ const UserProfile = () => {
             <button
               type="button"
               className="editSaveButton"
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/#shop')}
             >
               К выбору!
             </button>

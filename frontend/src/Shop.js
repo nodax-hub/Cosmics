@@ -1,12 +1,41 @@
+import { useEffect, useState } from 'react';
 import Slider from 'react-slick';
-import './Shop.css';
+import './Shop.css'; // Импорт CSS стилей
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-import comic1 from './Images/xmen.jpg';
-import comic2 from './Images/boys.jpg';
-import comic3 from './Images/iron-man.jpg';
 
 const ShopPage = () => {
+  const [comics, setComics] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    // Функция для загрузки данных о комиксах
+    const fetchComics = async () => {
+      try {
+        const response = await fetch('http://localhost:8000/api/comics');
+        if (!response.ok) {
+          throw new Error('Ошибка сети или сервер вернул некорректный ответ');
+        }
+        const data = await response.json();
+        console.log('Загруженные данные о комиксах:', data);
+        // Убедимся, что полученные данные - это массив
+        if (Array.isArray(data)) {
+          setComics(data);
+        } else {
+          throw new Error('Ответ API не является массивом');
+        }
+      } catch (error) {
+        console.error('Ошибка при загрузке данных о комиксах:', error);
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchComics();
+  }, []);
+
   const settings = {
     dots: true,
     infinite: true,
@@ -41,34 +70,24 @@ const ShopPage = () => {
     ]
   };
 
+  if (loading) return <div>Загрузка...</div>;
+  if (error) return <div>Ошибка: {error}</div>;
+
   return (
     <div className="shopPage">
       <h2 id="shop" className="Title">Журналы</h2>
       <Slider {...settings}>
-        <div className="shopCard">
-          <img src={comic1} alt="Product" className="productImage" />
-          <div className="info">
-            <p>X-Men</p>
-            <p>3000 тунгриков</p>
-            <button className="buyButton">Купить</button>
+        {comics.map((comic) => (
+          <div key={comic.id} className="shopCard">
+            {/* Используем путь из папки public */}
+            <img src={`/comics/${comic.id}.jpg`} alt={comic.title} className="productImage" />
+            <div className="info">
+              <p>{comic.title}</p>
+              <p>{comic.price} рублей</p>
+              <button className="buyButton">Купить</button>
+            </div>
           </div>
-        </div>
-        <div className="shopCard">
-          <img src={comic2} alt="Product" className="productImage" />
-          <div className="info">
-            <p>The Boys</p>
-            <p>2999 тунгриков</p>
-            <button className="buyButton">Купить</button>
-          </div>
-        </div>
-        <div className="shopCard">
-          <img src={comic3} alt="Product" className="productImage" />
-          <div className="info">
-            <p>Iron Man</p>
-            <p>3001 тунгриков</p>
-            <button className="buyButton">Купить</button>
-          </div>
-        </div>
+        ))}
       </Slider>
     </div>
   );

@@ -87,5 +87,10 @@ class ComicBookCreate(ComicBookBase):
 class ComicBook(ComicBookBase):
     id: int
 
+class ComicBookResponse(BaseModel):
+    id: int
+    title: str
+    price: float
+
     class Config:
         orm_mode = True
