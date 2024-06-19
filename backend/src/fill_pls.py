@@ -1,6 +1,8 @@
 import random
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
+
 from models import Base, ComicBook
 
 # Данные для заполнения таблицы ComicBook
@@ -240,10 +242,10 @@ def main():
     database_path = r'C:\Users\nik_z\PycharmProjects\here\sql_app.db'
     engine = create_engine(f'sqlite:///{database_path}')
     Base.metadata.bind = engine
-
+    
     # Создаем сессию базы данных
     DBSession = sessionmaker(bind=engine)
-
+    
     with DBSession() as session:
         create_unique_comics(session)
 

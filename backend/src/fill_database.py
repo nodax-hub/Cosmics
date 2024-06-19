@@ -63,7 +63,7 @@ def create_comics(session: Session, num: int):
 
 def main():
     # Создаем соединение с базой данных
-    engine = create_engine("sqlite:///../sql_app.db")
+    engine = create_engine("sqlite:///../../sql_app.db")
     Base.metadata.bind = engine
     
     # Создаем сессию базы данных
@@ -71,7 +71,7 @@ def main():
     
     with DBSession() as session:
         create_comics(session, 100)
-        create_users(session, 100)
+        # create_users(session, 100)
 
 
 if __name__ == '__main__':

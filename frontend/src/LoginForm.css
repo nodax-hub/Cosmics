@@ -1,81 +1,81 @@
 /* LoginForm.css */
 .loginOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
 }
 
 .loginForm {
-  background: #fff;
-  border: 2px solid #00c8ff;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-  color: black;
-  width: 400px;
-  z-index: 10000;
+    background: #fff;
+    border: 2px solid #00c8ff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    color: black;
+    width: 400px;
+    z-index: 10000;
 }
 
 .handle {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
 .closeButton {
-  background: none;
-  border: none;
-  color: black;
-  font-size: 24px;
-  cursor: pointer;
+    background: none;
+    border: none;
+    color: black;
+    font-size: 24px;
+    cursor: pointer;
 }
 
 .inputField {
-  width: calc(100% - 20px);
-  padding: 10px;
-  margin: 10px 0;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }
 
 .inputField:focus {
-  border-color: #00c8ff;
-  box-shadow: 0 0 5px rgba(0, 200, 255, 0.5);
-  outline: none;
+    border-color: #00c8ff;
+    box-shadow: 0 0 5px rgba(0, 200, 255, 0.5);
+    outline: none;
 }
 
 .button {
-  background-color: #00c8ff;
-  border: none;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  padding: 12px 25px;
-  border-radius: 5px;
-  width: 100%;
-  font-size: 18px;
-  margin-top: 10px;
-  transition: background 0.3s, box-shadow 0.3s;
+    background-color: #00c8ff;
+    border: none;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 12px 25px;
+    border-radius: 5px;
+    width: 100%;
+    font-size: 18px;
+    margin-top: 10px;
+    transition: background 0.3s, box-shadow 0.3s;
 }
 
 .button:hover {
-  background-color: #007bff;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    background-color: #007bff;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 .successMessage {
-  background: #00c8ff;
-  color: black;
-  padding: 10px;
-  border-radius: 5px;
-  margin-bottom: 20px;
-  text-align: center;
+    background: #00c8ff;
+    color: black;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    text-align: center;
 }

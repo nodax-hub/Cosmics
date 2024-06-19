@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import {useState} from 'react';
 import './Admin.css';
 import profile from './Images/профиль.jpg';
 import comic1 from "./Images/xmen.jpg";
@@ -11,19 +11,19 @@ const Admin = () => {
     });
 
     const orders = [
-        { title: "Заказ от Фёдора", id: "1", status: "принят" , image: comic1},
-        { title: "Заказ от Фёдора", id: "1", status: "принят" , image: comic1},
-        { title: "Заказ от Фёдора", id: "1", status: "принят" , image: comic1},
-        { title: "Заказ от Фёдора", id: "1", status: "принят" , image: comic1},
-        { title: "Заказ от Фёдора", id: "1", status: "принят" , image: comic1},
-        { title: "Заказ от Фёдора", id: "1", status: "принят" , image: comic1},
-        { title: "Заказ от Фёдора", id: "1", status: "принят" , image: comic1},
-        { title: "Заказ от Фёдора", id: "1", status: "принят" , image: comic1},
-        { title: "Заказ от Фёдора", id: "1", status: "принят" , image: comic1},
-        { title: "Заказ от Фёдора", id: "1", status: "принят" , image: comic1},
-        { title: "Заказ от Фёдора", id: "1", status: "принят" , image: comic1},
-        { title: "Заказ от Фёдора", id: "1", status: "принят" , image: comic1},
-        { title: "Заказ от Фёдора", id: "1", status: "принят" , image: comic1},
+        {title: "Заказ от Фёдора", id: "1", status: "принят", image: comic1},
+        {title: "Заказ от Фёдора", id: "1", status: "принят", image: comic1},
+        {title: "Заказ от Фёдора", id: "1", status: "принят", image: comic1},
+        {title: "Заказ от Фёдора", id: "1", status: "принят", image: comic1},
+        {title: "Заказ от Фёдора", id: "1", status: "принят", image: comic1},
+        {title: "Заказ от Фёдора", id: "1", status: "принят", image: comic1},
+        {title: "Заказ от Фёдора", id: "1", status: "принят", image: comic1},
+        {title: "Заказ от Фёдора", id: "1", status: "принят", image: comic1},
+        {title: "Заказ от Фёдора", id: "1", status: "принят", image: comic1},
+        {title: "Заказ от Фёдора", id: "1", status: "принят", image: comic1},
+        {title: "Заказ от Фёдора", id: "1", status: "принят", image: comic1},
+        {title: "Заказ от Фёдора", id: "1", status: "принят", image: comic1},
+        {title: "Заказ от Фёдора", id: "1", status: "принят", image: comic1},
     ];
 
     const [editing, setEditing] = useState(false);
@@ -38,13 +38,13 @@ const Admin = () => {
     };
 
     const handleChange = (e) => {
-        setUser({ ...user, [e.target.name]: e.target.value });
+        setUser({...user, [e.target.name]: e.target.value});
     };
 
     return (
         <div className="adminProfile">
             <div className="userDetails">
-                <img src={profile} alt="Profile" className="profilePicture" />
+                <img src={profile} alt="Profile" className="profilePicture"/>
                 <div className="userInfo">
                     <div className="name">
                         {editing ? (
@@ -79,7 +79,8 @@ const Admin = () => {
                         <a href="http://localhost:3000" className="editSaveButton">На главную</a>
                         {!editing && (
                             <div className="editSave">
-                                <button type="button" className="editSaveButton" onClick={handleEdit}>Редактировать</button>
+                                <button type="button" className="editSaveButton" onClick={handleEdit}>Редактировать
+                                </button>
                             </div>
                         )}
                         {editing && (
@@ -96,7 +97,7 @@ const Admin = () => {
                 <div className="orders">
                     {orders.map((order, index) => (
                         <div className="card" key={index}>
-                            <img src={order.image} alt={order.title} />
+                            <img src={order.image} alt={order.title}/>
                             <div className="container">
                                 <h4>{order.title}</h4>
                                 <p>{order.id}</p>

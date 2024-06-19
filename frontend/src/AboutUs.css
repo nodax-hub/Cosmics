@@ -1,76 +1,76 @@
 
 .aboutUs {
-  padding: 40px;
-  background: none; /* Фон устанавливается в App.css */
-  color: white;
-  text-align: center;
-  font-family: 'Comic Neue', sans-serif;
+    padding: 40px;
+    background: none; /* Фон устанавливается в App.css */
+    color: white;
+    text-align: center;
+    font-family: 'Comic Neue', sans-serif;
 }
 
 .aboutUs h2 {
-  margin-bottom: 20px;
-  font-size: 48px;
-  color: white;
-  background-color: rgba(0, 0, 0, 0.7); /* Полупрозрачный фон */
-  padding: 10px;
-  border-radius: 10px;
+    margin-bottom: 20px;
+    font-size: 48px;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.7); /* Полупрозрачный фон */
+    padding: 10px;
+    border-radius: 10px;
 }
 
 .aboutUs p {
-  color: #ddd;
-  font-size: 20px;
-  margin-bottom: 40px;
-  background-color: rgba(0, 0, 0, 0.7); /* Полупрозрачный фон */
-  padding: 20px;
-  border-radius: 10px;
+    color: #ddd;
+    font-size: 20px;
+    margin-bottom: 40px;
+    background-color: rgba(0, 0, 0, 0.7); /* Полупрозрачный фон */
+    padding: 20px;
+    border-radius: 10px;
 }
 
 .team {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-bottom: 40px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
 }
 
 .team-member {
-  background: rgba(0, 0, 0, 0.8); /* Полупрозрачный фон */
-  border-radius: 10px;
-  margin: 15px;
-  padding: 20px;
-  text-align: center;
-  width: 250px;
+    background: rgba(0, 0, 0, 0.8); /* Полупрозрачный фон */
+    border-radius: 10px;
+    margin: 15px;
+    padding: 20px;
+    text-align: center;
+    width: 250px;
 }
 
 .team-member img {
-  border-radius: 50%;
-  width: 200px;
-  height: 200px;
-  margin-bottom: 15px;
+    border-radius: 50%;
+    width: 200px;
+    height: 200px;
+    margin-bottom: 15px;
 }
 
 .team-member h4 {
-  font-size: 22px;
-  margin: 10px 0;
-  color: #00c8ff; /* Второй цвет для акцентов */
+    font-size: 22px;
+    margin: 10px 0;
+    color: #00c8ff; /* Второй цвет для акцентов */
 }
 
 .team-member p {
-  font-size: 18px;
-  color: #aaa;
+    font-size: 18px;
+    color: #aaa;
 }
 
 .learnMoreButton {
-  padding: 10px 20px;
-  background-color: #00c8ff; /* Второй цвет */
-  border: 2px solid #00c8ff;
-  color: black;
-  font-size: 20px;
-  cursor: pointer;
-  transition: background-color 0.3s, color 0.3s; /* Плавное изменение цветов */
-  border-radius: 20px;
+    padding: 10px 20px;
+    background-color: #00c8ff; /* Второй цвет */
+    border: 2px solid #00c8ff;
+    color: black;
+    font-size: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s; /* Плавное изменение цветов */
+    border-radius: 20px;
 }
 
 .learnMoreButton:hover {
-  background-color: #333;
-  color: white;
+    background-color: #333;
+    color: white;
 }

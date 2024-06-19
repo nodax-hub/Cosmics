@@ -1,19 +1,14 @@
-from typing import List, Literal
-from fastapi import Depends, FastAPI, HTTPException, status
+import fastapi.security as _security
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi_jwt_auth import AuthJWT
 from fastapi_jwt_auth.exceptions import AuthJWTException
-from pydantic import BaseModel
-from fastapi.security import OAuth2PasswordBearer
-
-from sqlalchemy.orm import Session
 from passlib.context import CryptContext
+from sqlalchemy.orm import Session
 
 from backend.src import crud, models, schemas
-from .models import ComicBook  # Изменен путь импорта на относительный
-
-from .schemas import ComicBookResponse
-from backend.src.database import SessionLocal, engine
+from backend.src import services
+from backend.src.database import engine
+from backend.src.services import get_db
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -34,104 +29,75 @@ app.add_middleware(
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-class Settings(BaseModel):
-    authjwt_secret_key: str = "secret"
-
-@AuthJWT.load_config
-def get_config():
-    return Settings()
 
 @app.exception_handler(AuthJWTException)
 def authjwt_exception_handler(request, exc):
     return HTTPException(status_code=exc.status_code, detail=exc.message)
 
-# Dependency for getting DB session
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+
+@app.get("/users/", response_model=list[schemas.User], tags=['users'])
+def read_users(current_user: schemas.User = Depends(services.get_current_user), db: Session = Depends(get_db)):
+    if current_user.role != models.Role.ADMIN:
+        raise HTTPException(status_code=403, detail="Not enough permissions")
+    return crud.get_users(db)
 
 
-
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-def get_user_by_token(token: str, db: Session = Depends(get_db)):
-    user = crud.get_user_by_token(db, token)
-    if user is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication credentials",
-        )
-    return user
-
-@app.post("/users/", response_model=schemas.User)
+@app.post("/users/", response_model=schemas.User, tags=['users'])
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = crud.get_user_by_email(db, email=user.email)
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     return crud.create_user(db=db, user=user)
 
-# Зависимость для проверки JWT и получения текущего пользователя
-def get_current_user(Authorize: AuthJWT = Depends(), db: Session = Depends(get_db)):
-    try:
-        Authorize.jwt_required()
-    except AuthJWTException as e:
-        raise HTTPException(status_code=401, detail="Unauthorized")
 
-    user_email = Authorize.get_jwt_subject()
-    user = crud.get_user_by_email(db, email=user_email)
-    if user is None:
-        raise HTTPException(status_code=401, detail="User not found")
-    return user
+@app.post("/users/token/", tags=['users'])
+async def generate_token(
+        form_data: _security.OAuth2PasswordRequestForm = Depends(),
+        db: Session = Depends(get_db),
+):
+    user = await services.authenticate_user(form_data.username, form_data.password, db)
+    
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid Credentials")
+    
+    return await services.create_token(user)
 
-@app.post("/auth/token/login/")
-def login(user: schemas.UserLogin, db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
-    db_user = crud.get_user_by_email(db, email=user.email)
-    if not db_user or not pwd_context.verify(user.password, db_user.hashed_password):
-        raise HTTPException(status_code=401, detail="Invalid email or password")
-    access_token = Authorize.create_access_token(subject=user.email)
-    return {"access_token": access_token}
 
-# Пример маршрута, доступного только авторизованным пользователям
-@app.get("/users/me", response_model=schemas.User)
-def read_users_me(current_user: schemas.User = Depends(get_current_user)):
+@app.get("/users/me", response_model=schemas.User, tags=['users'])
+def read_users_me(current_user: schemas.User = Depends(services.get_current_user)):
     return current_user
 
-@app.put("/users/me", response_model=schemas.User)
+
+@app.put("/users/me", response_model=schemas.User, tags=['users'])
 def update_current_user(
-    user_update: schemas.UserUpdate,
-    db: Session = Depends(get_db),
-    current_user: schemas.User = Depends(get_current_user)
+        user_update: schemas.UserUpdate,
+        db: Session = Depends(get_db),
+        current_user: schemas.User = Depends(services.get_current_user)
 ):
     if user_update.password:
         user_update.password = pwd_context.hash(user_update.password)
+    
     updated_user = crud.update_user(db, user_id=current_user.id, user_update=user_update)
     if not updated_user:
         raise HTTPException(status_code=404, detail="User not found")
     return updated_user
 
-# Пример маршрута для создания комикса, доступного только авторизованным пользователям
-@app.post("/comic_books/", response_model=schemas.ComicBook)
+
+@app.post("/comics/", response_model=schemas.ComicBook, tags=['comic_book'])
 def create_comic_book(
-        comic_book: schemas.ComicBookCreate, db: Session = Depends(get_db), current_user: schemas.User = Depends(get_current_user)
+        comic_book: schemas.ComicBookCreate,
+        db: Session = Depends(get_db),
+        current_user: schemas.User = Depends(services.get_current_user)
 ):
     return crud.create_comic_book(db=db, comic_book=comic_book)
 
-@app.get("/comic_books/", response_model=List[schemas.ComicBook])
-def read_comic_books(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+
+@app.get("/comics/", response_model=list[schemas.ComicBook], tags=['comic_book'])
+def read_comic_books(skip: int = 0, limit: int = 30, db: Session = Depends(get_db)):
     return crud.get_comic_books(db, skip=skip, limit=limit)
 
-@app.get("/comics", response_model=list[ComicBookResponse])
-def read_comics(db: Session = Depends(get_db)):
-    comics = db.query(ComicBook).all()
-    return comics
 
-
-# Новый эндпоинт для получения информации о комиксе по id
-@app.get("/comic_books/{id}", response_model=schemas.ComicBook)
+@app.get("/comics/{id}", response_model=schemas.ComicBook, tags=['comic_book'])
 def read_comic_book(id: int, db: Session = Depends(get_db)):
     comic_book = crud.get_comic_book_by_id(db, comic_id=id)
     if comic_book is None:
@@ -139,9 +105,7 @@ def read_comic_book(id: int, db: Session = Depends(get_db)):
     return comic_book
 
 
-
-
 if __name__ == '__main__':
     import uvicorn
-
+    
     uvicorn.run(app, host="127.0.0.1", port=8000)
