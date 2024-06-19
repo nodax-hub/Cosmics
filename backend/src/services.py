@@ -20,27 +20,27 @@ def get_db():
         db.close()
 
 
-async def create_token(user: models.User):
+def create_token(user: models.User):
     user_obj = schemas.User.from_orm(user)
-    
+
     token = jwt.encode(user_obj.dict(), JWT_SECRET)
-    
+
     return dict(access_token=token, token_type="bearer")
 
 
-async def authenticate_user(email: str, password: str, db: Session):
+def authenticate_user(email: str, password: str, db: Session):
     user = get_user_by_email(db=db, email=email)
-    
+
     if not user:
         return False
-    
+
     if not user.verify_password(password):
         return False
-    
+
     return user
 
 
-async def get_current_user(
+def get_current_user(
         db: Session = Depends(get_db),
         token: str = Depends(oauth2schema),
 ):
@@ -51,5 +51,5 @@ async def get_current_user(
         raise HTTPException(
             status_code=401, detail="Invalid Email or Password"
         )
-    
+
     return schemas.User.from_orm(user)

@@ -35,14 +35,14 @@ def authjwt_exception_handler(request, exc):
     return HTTPException(status_code=exc.status_code, detail=exc.message)
 
 
-@app.get("/users/", response_model=list[schemas.User], tags=['users'])
+@app.get("/users", response_model=list[schemas.User], tags=['users'])
 def read_users(current_user: schemas.User = Depends(services.get_current_user), db: Session = Depends(get_db)):
     if current_user.role != models.Role.ADMIN:
         raise HTTPException(status_code=403, detail="Not enough permissions")
     return crud.get_users(db)
 
 
-@app.post("/users/", response_model=schemas.User, tags=['users'])
+@app.post("/users", response_model=schemas.User, tags=['users'])
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = crud.get_user_by_email(db, email=user.email)
     if db_user:
@@ -50,17 +50,51 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return crud.create_user(db=db, user=user)
 
 
-@app.post("/users/token/", tags=['users'])
-async def generate_token(
+@app.get("/users/orders", response_model=list[schemas.Order], tags=['users'])
+def get_orders(skip: int = 0, limit: int = 100,
+               db: Session = Depends(get_db), current_user: schemas.User = Depends(services.get_current_user)):
+    if current_user.role == models.Role.ADMIN:
+        return crud.get_all_orders(skip=skip, limit=limit, db=db)
+    else:
+        return crud.get_user_orders(user_id=current_user.id, skip=skip, limit=limit, db=db)
+
+
+@app.post('users/orders/create_order', response_model=schemas.Order, tags=['users'])
+def create_order(
+        order: schemas.OrderCreate,
+        db: Session = Depends(get_db),
+        current_user: schemas.User = Depends(services.get_current_user)
+):
+    return crud.create_order(db=db, order=order, user_id=current_user.id)
+
+
+@app.get('users/orders/{order_id}', response_model=list[schemas.Sale], tags=['users'])
+def get_order_details_by_id(
+        order_id: int,
+        db: Session = Depends(get_db),
+        current_user: schemas.User = Depends(services.get_current_user)
+):
+    owner_id = crud.get_order_owner_id(db=db, order_id=order_id)
+
+    # Если пользователь не админ проверяем является ли он владельцем заказа который запрашивает
+    if current_user.role != models.Role.ADMIN:
+        if owner_id != current_user.id:
+            raise HTTPException(status_code=403, detail="Not enough permissions")
+
+    return crud.get_all_sales_by_order_id(db=db, order_id=order_id)
+
+
+@app.post("/token", tags=['auth'])
+def generate_token(
         form_data: _security.OAuth2PasswordRequestForm = Depends(),
         db: Session = Depends(get_db),
 ):
-    user = await services.authenticate_user(form_data.username, form_data.password, db)
+    user = services.authenticate_user(form_data.username, form_data.password, db)
 
     if not user:
         raise HTTPException(status_code=401, detail="Invalid Credentials")
 
-    return await services.create_token(user)
+    return services.create_token(user)
 
 
 @app.get("/users/me", response_model=schemas.User, tags=['users'])
@@ -83,7 +117,7 @@ def update_current_user(
     return updated_user
 
 
-@app.post("/comics/", response_model=schemas.ComicBook, tags=['comic_book'])
+@app.post("/comics", response_model=schemas.ComicBook, tags=['comic_book'])
 def create_comic_book(
         comic_book: schemas.ComicBookCreate,
         db: Session = Depends(get_db),
@@ -92,7 +126,7 @@ def create_comic_book(
     return crud.create_comic_book(db=db, comic_book=comic_book)
 
 
-@app.get("/comics/", response_model=list[schemas.ComicBook], tags=['comic_book'])
+@app.get("/comics", response_model=list[schemas.ComicBook], tags=['comic_book'])
 def read_comic_books(skip: int = 0, limit: int = 30, db: Session = Depends(get_db)):
     return crud.get_comic_books(db, skip=skip, limit=limit)
 
@@ -103,25 +137,6 @@ def read_comic_book(id: int, db: Session = Depends(get_db)):
     if comic_book is None:
         raise HTTPException(status_code=404, detail="Comic not found")
     return comic_book
-
-
-@app.post('/order/create_order', response_model=schemas.Order, tags=['order'])
-def create_order(
-        current_user_id: int,
-        order: schemas.OrderCreate,
-        db: Session = Depends(get_db),
-        # current_user: schemas.User = Depends(services.get_current_user)
-):
-    return crud.create_order(db=db, order=order, user_id=current_user_id)
-
-
-@app.get('/sales/{order_id}', response_model=list[schemas.Sale], tags=['order'])
-def get_sales(
-        order_id: int,
-        db: Session = Depends(get_db),
-        # current_user: schemas.User = Depends(services.get_current_user)
-):
-    return crud.get_all_sales_by_order_id(db=db, order_id=order_id)
 
 
 if __name__ == '__main__':

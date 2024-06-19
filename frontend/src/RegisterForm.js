@@ -42,7 +42,7 @@ const RegisterForm = ({isVisible, onClose}) => {
                 console.log(response.message, 'Регистрация прошла успешно!');
                 try {
 
-                    const response = await fetch("http://localhost:8000/api/users/token/", {
+                    const response = await fetch("http://localhost:8000/api/token/", {
                         method: "POST",
                         headers: {"Content-Type": "application/x-www-form-urlencoded"},
                         body: JSON.stringify(

@@ -13,7 +13,7 @@ const Header = ({onLogout}) => {
     const navigate = useNavigate();
     const [token, setToken] = useContext(UserContext);
     const location = useLocation(); // Получаем текущий путь
-
+    console.log('Cur token:', token);
     useEffect(() => {
         const fetchUserRole = async () => {
             if (token) {
@@ -77,7 +77,7 @@ const Header = ({onLogout}) => {
                 {token ? (
                     <div className="authButtons">
                         <button className="profileButton" onClick={handleProfileClick}>
-                            {userRole === 'admin' && location.pathname === '/admin' ? 'Админ' : 'Профиль'}
+                            {userRole === 'admin' ? 'Админ' : 'Профиль'}
                         </button>
                         <button className="logoutButton" onClick={handleLogoutClick}>Выход</button>
                     </div>

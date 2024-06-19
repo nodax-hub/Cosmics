@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
@@ -87,4 +88,29 @@ def create_order(db: Session, order: schemas.OrderCreate, user_id: int):
 
 
 def get_all_sales_by_order_id(db: Session, order_id: int):
-    return db.query(models.Sale).filter_by(order_id = order_id).all()
+    return db.query(models.Sale).filter_by(order_id=order_id).all()
+
+
+def get_order_by_id(db: Session, order_id: int):
+    return db.query(models.Order).get(order_id)
+
+
+def get_user_by_id(db, user_id):
+    return db.query(models.User).get(user_id)
+
+
+def get_order_owner_id(db: Session, order_id: int):
+    order: models.Order = get_order_by_id(db, order_id=order_id)
+
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    return order.customer_id
+
+
+def get_all_orders(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Order).offset(skip).limit(limit).all()
+
+
+def get_user_orders(db: Session, user_id: int, skip: int = 0, limit: int = 100):
+    return db.query(models.Order).filter_by(customer_id=user_id).offset(skip).limit(limit).all()

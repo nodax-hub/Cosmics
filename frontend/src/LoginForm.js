@@ -24,7 +24,7 @@ const LoginForm = ({isVisible, onClose}) => {
                 ),
             };
 
-            const response = await fetch("http://localhost:8000/users/token/", requestOptions);
+            const response = await fetch("http://localhost:8000/token/", requestOptions);
 
             if (!response.ok) {
                 const errorData = await response.text(); // Чтение тела ответа как текст

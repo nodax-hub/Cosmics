@@ -14,7 +14,7 @@ class Role(str, enum.Enum):
 
 class User(Base):
     __tablename__ = "User"
-    
+
     id = Column(Integer, primary_key=True)
     login = Column(String, unique=True, index=True)
     email = Column(String, unique=True, index=True)
@@ -23,7 +23,7 @@ class User(Base):
     role = Column(Enum(Role), default=Role.CUSTOMER)
     hashed_password = Column(String)
     orders = relationship("Order", back_populates="user")
-    
+
     def verify_password(self, password: str):
         return _hash.bcrypt.verify(password, self.hashed_password)
 
