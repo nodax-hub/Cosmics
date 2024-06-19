@@ -19,91 +19,6 @@ const UserProfile = () => {
     useEffect(() => {
         if (hasFetched.current) return;
 
-        // Пример данных заказов, замените реальными данными позже
-        const exampleOrders = [
-            {
-                id: 1,
-                date: '2023-06-01',
-                status: 'Доставлен',
-                comics: [
-                    {id: 1, title: 'Комикс 1', price: 100, image: '/comics/1.jpg'},
-                    {id: 2, title: 'Комикс 2', price: 200, image: '/comics/3.jpg'},
-                    {id: 1, title: 'Комикс 1', price: 100, image: '/comics/4.jpg'},
-                    {id: 2, title: 'Комикс 2', price: 200, image: '/comics/2.jpg'}
-                ]
-            },
-            {
-                id: 2,
-                date: '2023-07-01',
-                status: 'В пути',
-                comics: [
-                    {id: 3, title: 'Комикс 3', price: 150, image: '/comics/3.jpg'},
-                    {id: 4, title: 'Комикс 4', price: 250, image: '/comics/4.jpg'}
-                ]
-            },
-
-            {
-                id: 2,
-                date: '2023-07-01',
-                status: 'В пути',
-                comics: [
-                    {id: 3, title: 'Комикс 3', price: 150, image: '/comics/3.jpg'},
-                    {id: 4, title: 'Комикс 4', price: 250, image: '/comics/4.jpg'}
-                ]
-            },
-
-            {
-                id: 2,
-                date: '2023-07-01',
-                status: 'В пути',
-                comics: [
-                    {id: 3, title: 'Комикс 3', price: 150, image: '/comics/3.jpg'},
-                    {id: 4, title: 'Комикс 4', price: 250, image: '/comics/4.jpg'}
-                ]
-            },
-
-            {
-                id: 2,
-                date: '2023-07-01',
-                status: 'В пути',
-                comics: [
-                    {id: 3, title: 'Комикс 3', price: 150, image: '/comics/3.jpg'},
-                    {id: 4, title: 'Комикс 4', price: 250, image: '/comics/4.jpg'}
-                ]
-            },
-
-            {
-                id: 2,
-                date: '2023-07-01',
-                status: 'В пути',
-                comics: [
-                    {id: 3, title: 'Комикс 3', price: 150, image: '/comics/3.jpg'},
-                    {id: 4, title: 'Комикс 4', price: 250, image: '/comics/4.jpg'}
-                ]
-            },
-            {
-                id: 2,
-                date: '2023-07-01',
-                status: 'В пути',
-                comics: [
-                    {id: 3, title: 'Комикс 3', price: 150, image: '/comics/3.jpg'},
-                    {id: 4, title: 'Комикс 4', price: 250, image: '/comics/4.jpg'}
-                ]
-            },
-
-            {
-                id: 2,
-                date: '2023-07-01',
-                status: 'В пути',
-                comics: [
-                    {id: 3, title: 'Комикс 3', price: 150, image: '/comics/3.jpg'},
-                    {id: 4, title: 'Комикс 4', price: 250, image: '/comics/4.jpg'}
-                ]
-            }
-
-
-        ];
-        setOrders(exampleOrders);
 
         const fetchUser = async () => {
             console.log('Fetching user data');
@@ -131,15 +46,66 @@ const UserProfile = () => {
                 console.error('Ошибка:', error.message);  // Более подробное логирование
             }
         };
+        const fetchedUserOrders = async () => {
+            console.log('Fetching user order data');
+
+            try {
+                const response = await fetch('http://localhost:8000/api/users/orders', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        alert('Требуется авторизация. Пожалуйста, войдите снова.');
+                        navigate('/');
+                        return;
+                    }
+                    throw new Error('Ошибка при получении данных пользователя');
+                }
+
+                const userOrdersData = await response.json();
+                console.log('userOrdersData', userOrdersData);
+                setOrders(userOrdersData);
+            } catch (error) {
+                console.error('Ошибка:', error.message);  // Более подробное логирование
+            }
+        };
 
         if (token) {
             fetchUser();
+            fetchedUserOrders();
             hasFetched.current = true;
         }
     }, [token, navigate]);
 
-    const handleOrderClick = (order) => {
-        setSelectedOrder(order);
+    const handleOrderClick = async (order) => {
+        try {
+            const response = await fetch(`http://localhost:8000/api/users/orders/${order.id}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                if (response.status === 401) {
+                    alert('Требуется авторизация. Пожалуйста, войдите снова.');
+                    navigate('/');
+                    return;
+                }
+                throw new Error('Ошибка при получении данных пользователя');
+            }
+
+            const data = await response.json();
+            console.log('data', data);
+            setSelectedOrder(data);
+        } catch (error) {
+            console.error('Ошибка:', error.message);  // Более подробное логирование
+        }
+
     };
 
     const handleCloseSlider = () => {
@@ -201,7 +167,7 @@ const UserProfile = () => {
         dots: true,
         infinite: true,
         speed: 500,
-        slidesToShow: 2,
+        slidesToShow: 4,
         slidesToScroll: 1
     };
 
@@ -274,26 +240,35 @@ const UserProfile = () => {
                     </form>
                 </div>
             </div>
+
+            <h1>{user.role === 'admin' ? 'Ваша роль: Администратор.' : ''}</h1>
+            <h2>{user.role === 'admin' ? 'Заказы всех пользователей:' : 'Мои заказы: '}</h2>
             <div className="orders">
-                <h2>Мои заказы:</h2>
+
                 {orders.map((order) => (
                     <div key={order.id} className="order" onClick={() => handleOrderClick(order)}>
                         <span>ID заказа: {order.id}</span>
-                        <span>Дата: {order.date}</span>
+                        <span>Дата: {order.order_date}</span>
                         <span>Статус: {order.status}</span>
                     </div>
                 ))}
             </div>
             {selectedOrder && (
                 <div className="orderSlider">
-                    <h3>Комиксы в заказе {selectedOrder.id}:</h3>
+                    <h3>Комиксы в заказе:</h3>
                     <Slider {...sliderSettings}>
-                        {selectedOrder.comics.map((comic) => (
-                            <div key={comic.id} className="comicSlide">
-                                <img src={comic.image} alt={comic.title} className="comicImage"/>
+                        {selectedOrder.map((sale) => (
+                            <div key={sale.comic_book_id} className="comicSlide">
+                                <img src={`/comics/${sale.comic_book_id}.jpg`} alt={sale.comic_book_id}
+                                     className="comicImage"/>
                                 <div className="comicInfo">
-                                    <p>{comic.title}</p>
-                                    <p>{comic.price} рублей</p>
+                                    <p>{user.role === 'admin' ? `Owner email: ${sale.order.user.email}` : ''}</p>
+                                    <p>Название: {sale.comic_book.title}</p>
+                                    <p>Автор: {sale.comic_book.author}</p>
+                                    <p>Издатель: {sale.comic_book.publisher}</p>
+                                    <p>Количество: {sale.quantity}</p>
+                                    <p>Цена за штуку: {sale.comic_book.price}</p>
+                                    <p>Цена Итого: {sale.quantity * sale.comic_book.price}</p>
                                 </div>
                             </div>
                         ))}

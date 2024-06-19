@@ -243,10 +243,10 @@ def main():
     database_path = Path('../../sql_app.db')
     engine = create_engine(f'sqlite:///{database_path}')
     Base.metadata.bind = engine
-
+    
     # Создаем сессию базы данных
     DBSession = sessionmaker(bind=engine)
-
+    
     with DBSession() as session:
         create_unique_comics(session)
 

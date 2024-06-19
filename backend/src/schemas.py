@@ -4,6 +4,43 @@ from enum import Enum
 from pydantic import BaseModel
 
 
+class ComicBookBase(BaseModel):
+    title: str
+    author: str
+    publisher: str
+    stock_quantity: int
+    description: str
+    genre: str
+    price: float
+
+
+class ComicBookCreate(ComicBookBase):
+    pass
+
+
+class ComicBook(BaseModel):
+    id: int
+    title: str
+    author: str
+    publisher: str
+    stock_quantity: int
+    description: str
+    genre: str
+    price: float
+    
+    class Config:
+        orm_mode = True
+
+
+class ComicBookResponse(BaseModel):
+    id: int
+    title: str
+    price: float
+    
+    class Config:
+        orm_mode = True
+
+
 class Role(str, Enum):
     customer = "customer"
     admin = "admin"
@@ -48,15 +85,6 @@ class SaleBase(BaseModel):
     quantity: int
 
 
-class Sale(SaleBase):
-    id: int
-    sale_date: datetime
-    order_id: int
-    
-    class Config:
-        orm_mode = True
-
-
 class OrderBase(BaseModel):
     pass
 
@@ -76,38 +104,19 @@ class Order(OrderBase):
         orm_mode = True
 
 
-class ComicBookBase(BaseModel):
-    title: str
-    author: str
-    publisher: str
-    stock_quantity: int
-    description: str
-    genre: str
-    price: float
-
-
-class ComicBookCreate(ComicBookBase):
-    pass
-
-
-class ComicBook(BaseModel):
-    id: int
-    title: str
-    author: str
-    publisher: str
-    stock_quantity: int
-    description: str
-    genre: str
-    price: float
+class OrderResponse(Order):
+    user: User
     
     class Config:
         orm_mode = True
 
 
-class ComicBookResponse(BaseModel):
+class SaleResponse(SaleBase):
     id: int
-    title: str
-    price: float
+    sale_date: datetime
+    order_id: int
+    comic_book: ComicBook
+    order: OrderResponse
     
     class Config:
         orm_mode = True

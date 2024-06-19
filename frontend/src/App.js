@@ -9,7 +9,6 @@ import Footer from './Footer';
 import UserProfile from './UserProfile';
 import Error from './Error';
 import ContactForm from './ContactForm';
-import Admin from "./Admin";
 import {UserContext, UserProvider} from './context/UserContext';
 import PrivateRoute from './PrivateRoute'; // Импортируем PrivateRoute
 import './App.css';
@@ -42,9 +41,6 @@ function AppContent() {
                     {/* Защищенные маршруты обернуты в PrivateRoute */}
                     <Route path="/profile" element={<PrivateRoute/>}>
                         <Route path="" element={<UserProfile/>}/>
-                    </Route>
-                    <Route path="/admin" element={<PrivateRoute/>}>
-                        <Route path="" element={<Admin/>}/>
                     </Route>
                     <Route path="*" element={<Error/>}/>
                 </Routes>

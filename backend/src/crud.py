@@ -73,22 +73,32 @@ def create_comic_book(db: Session, comic_book: schemas.ComicBookCreate):
 
 def create_order(db: Session, order: schemas.OrderCreate, user_id: int):
     db_order = models.Order(customer_id=user_id)
-
+    
     db.add(db_order)
     db.flush()
-
+    
     for sale in order.sales:
+        if not db.query(models.ComicBook).get(sale.comic_book_id):
+            raise HTTPException(status_code=404, detail="Comic not found")
+        
         db.add(models.Sale(order_id=db_order.id, **sale.dict()))
         if sale.quantity == 666:
             raise Exception
-
+    
     db.commit()
-
+    
     return db_order
 
 
 def get_all_sales_by_order_id(db: Session, order_id: int):
-    return db.query(models.Sale).filter_by(order_id=order_id).all()
+    all_ = (db
+            .query(models.Sale)
+            .join(models.ComicBook, models.Sale.comic_book_id == models.ComicBook.id)
+            .join(models.Order, models.Sale.order_id == models.Order.id)
+            .join(models.User, models.Order.customer_id == models.User.id)
+            .filter(models.Sale.order_id == order_id)
+            .all())
+    return all_
 
 
 def get_order_by_id(db: Session, order_id: int):
@@ -101,10 +111,10 @@ def get_user_by_id(db, user_id):
 
 def get_order_owner_id(db: Session, order_id: int):
     order: models.Order = get_order_by_id(db, order_id=order_id)
-
+    
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
-
+    
     return order.customer_id
 
 
