@@ -1,74 +1,111 @@
 import PropTypes from 'prop-types';
 import './Header.css';
-import { useContext, useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom'; // Импортируем useLocation для определения текущего пути
+import {useContext, useEffect, useState} from 'react';
+import {useLocation, useNavigate} from 'react-router-dom'; // Импортируем useLocation для определения текущего пути
 import LoginForm from './LoginForm';
 import RegisterForm from './RegisterForm';
-import { UserContext } from './context/UserContext';
+import {UserContext} from './context/UserContext';
 
-const Header = ({ onLogout }) => {
-  const [isLoginVisible, setLoginVisible] = useState(false);
-  const [isRegisterVisible, setRegisterVisible] = useState(false);
-  const navigate = useNavigate();
-  const [token, setToken] = useContext(UserContext);
-  const location = useLocation(); // Получаем текущий путь
+const Header = ({onLogout}) => {
+    const [isLoginVisible, setLoginVisible] = useState(false);
+    const [isRegisterVisible, setRegisterVisible] = useState(false);
+    const [userRole, setUserRole] = useState(null); // Добавляем состояние для роли пользователя
+    const navigate = useNavigate();
+    const [token, setToken] = useContext(UserContext);
+    const location = useLocation(); // Получаем текущий путь
 
-  const toggleLoginForm = () => {
-    setLoginVisible(!isLoginVisible);
-    setRegisterVisible(false);
-  };
+    useEffect(() => {
+        const fetchUserRole = async () => {
+            if (token) {
+                try {
+                    const response = await fetch('http://localhost:8000/api/users/me', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    });
 
-  const toggleRegisterForm = () => {
-    setRegisterVisible(!isRegisterVisible);
-    setLoginVisible(false);
-  };
+                    if (response.ok) {
+                        const data = await response.json();
+                        setUserRole(data.role);
+                    } else {
+                        console.error('Ошибка получения данных пользователя:', response.statusText);
+                    }
+                } catch (error) {
+                    console.error('Ошибка:', error);
+                }
+            }
+        };
 
-  const handleLogoutClick = () => {
-    setToken(null);
-    localStorage.removeItem('token'); // Удаление токена из localStorage
-    onLogout();
-    navigate('/'); // Перенаправление на главную страницу после выхода
-  };
+        fetchUserRole();
+    }, [token]);
 
-  // Определяем, нужно ли скрыть навигационные элементы
-  const hideNavigation = location.pathname.includes('/profile') || location.pathname.includes('/admin');
+    const toggleLoginForm = () => {
+        setLoginVisible(!isLoginVisible);
+        setRegisterVisible(false);
+    };
 
-  return (
-    <header>
-      <div className="header-top">
-        <div className="logo">
-          <h1 className="headerTitle">COSMICS</h1>
-        </div>
-        {token ? (
-          <div className="authButtons">
-            <Link to="/profile" className="profileButton">Профиль</Link>
-            <button className="logoutButton" onClick={handleLogoutClick}>Выход</button>
-          </div>
-        ) : (
-          <div className="authButtons">
-            <button className="loginButton" onClick={toggleLoginForm}>Войти</button>
-            <button className="registerButton" onClick={toggleRegisterForm}>Регистрация</button>
-          </div>
-        )}
-      </div>
-      {!hideNavigation && ( // Условное отображение навигации
-        <div className="header-bottom">
-          <nav className="navigation">
-            <a href="#aboutUs" className="navLink">О сервисе</a>
-            <a href="#workWithUs" className="navLink">Сотрудничество</a>
-            <a href="#shop" className="navLink">Журналы</a>
-            <a href="#contact" className="navLink">Помощь</a>
-          </nav>
-        </div>
-      )}
-      <LoginForm isVisible={isLoginVisible} onClose={toggleLoginForm} />
-      <RegisterForm isVisible={isRegisterVisible} onClose={toggleRegisterForm} />
-    </header>
-  );
+    const toggleRegisterForm = () => {
+        setRegisterVisible(!isRegisterVisible);
+        setLoginVisible(false);
+    };
+
+    const handleLogoutClick = () => {
+        setToken(null);
+        localStorage.removeItem('token'); // Удаление токена из localStorage
+        onLogout();
+        navigate('/'); // Перенаправление на главную страницу после выхода
+    };
+
+    // Определяем, нужно ли скрыть навигационные элементы
+    const hideNavigation = location.pathname.includes('/profile') || location.pathname.includes('/admin');
+
+    const handleProfileClick = () => {
+        if (userRole === 'admin') {
+            navigate('/admin');
+        } else {
+            navigate('/profile');
+        }
+    };
+
+    return (
+        <header>
+            <div className="header-top">
+                <div className="logo">
+                    <h1 className="headerTitle">COSMICS</h1>
+                </div>
+                {token ? (
+                    <div className="authButtons">
+                        <button className="profileButton" onClick={handleProfileClick}>
+                            {userRole === 'admin' && location.pathname === '/admin' ? 'Админ' : 'Профиль'}
+                        </button>
+                        <button className="logoutButton" onClick={handleLogoutClick}>Выход</button>
+                    </div>
+                ) : (
+                    <div className="authButtons">
+                        <button className="loginButton" onClick={toggleLoginForm}>Войти</button>
+                        <button className="registerButton" onClick={toggleRegisterForm}>Регистрация</button>
+                    </div>
+                )}
+            </div>
+            {!hideNavigation && ( // Условное отображение навигации
+                <div className="header-bottom">
+                    <nav className="navigation">
+                        <a href="#aboutUs" className="navLink">О сервисе</a>
+                        <a href="#workWithUs" className="navLink">Сотрудничество</a>
+                        <a href="#shop" className="navLink">Журналы</a>
+                        <a href="#contact" className="navLink">Помощь</a>
+                    </nav>
+                </div>
+            )}
+            <LoginForm isVisible={isLoginVisible} onClose={toggleLoginForm}/>
+            <RegisterForm isVisible={isRegisterVisible} onClose={toggleRegisterForm}/>
+        </header>
+    );
 };
 
 Header.propTypes = {
-  onLogout: PropTypes.func.isRequired,
+    onLogout: PropTypes.func.isRequired,
 };
 
 export default Header;

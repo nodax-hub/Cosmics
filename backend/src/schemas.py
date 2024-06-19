@@ -1,24 +1,31 @@
 from datetime import datetime
-from pydantic import BaseModel
 from enum import Enum
+
+from pydantic import BaseModel
 
 
 class Role(str, Enum):
     customer = "customer"
     admin = "admin"
 
+
 class UserBase(BaseModel):
     email: str
+
+
 class UserInfo(UserBase):
     login: str
     first_name: str
     last_name: str
 
+
 class UserCreate(UserInfo):
     password: str
 
+
 class UserLogin(UserBase):
     password: str
+
 
 class UserUpdate(BaseModel):
     login: str | None = None
@@ -26,6 +33,7 @@ class UserUpdate(BaseModel):
     last_name: str | None = None
     email: str | None = None
     password: str | None = None
+
 
 class User(UserInfo):
     id: int
@@ -96,6 +104,7 @@ class ComicBook(BaseModel):
 
     class Config:
         orm_mode = True
+
 
 class ComicBookResponse(BaseModel):
     id: int

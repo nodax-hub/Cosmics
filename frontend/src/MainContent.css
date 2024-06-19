@@ -1,73 +1,73 @@
 
 .mainContent {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  padding: 30px;
-  min-height: 60vh;
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-  position: relative;
-  z-index: 1;
-  font-family: 'Comic Neue', sans-serif;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 30px;
+    min-height: 60vh;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    position: relative;
+    z-index: 1;
+    font-family: 'Comic Neue', sans-serif;
 }
 
 .salesText {
-  flex: 1;
-  text-align: left;
-  margin: 100px 30px 30px 100px;
-  max-width: 400px;
+    flex: 1;
+    text-align: left;
+    margin: 100px 30px 30px 100px;
+    max-width: 400px;
 }
 
 .salesText h2 {
-  font-size: 32px;
-  margin-bottom: 20px;
-  color: #00c8ff;
+    font-size: 32px;
+    margin-bottom: 20px;
+    color: #00c8ff;
 }
 
 .salesText p {
-  font-size: 18px;
-  line-height: 1.5;
+    font-size: 18px;
+    line-height: 1.5;
 }
 
 .comicsContainer {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  flex: 2;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    flex: 2;
 }
 
 .card {
-  background: #1a1a1a;
-  border-radius: 10px;
-  color: white;
-  margin: 15px;
-  width: 250px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transition: transform 0.2s;
+    background: #1a1a1a;
+    border-radius: 10px;
+    color: white;
+    margin: 15px;
+    width: 250px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s;
 }
 
 .card:hover {
-  transform: scale(1.05);
+    transform: scale(1.05);
 }
 
 .card img {
-  border-radius: 10px 10px 0 0;
-  width: 100%;
+    border-radius: 10px 10px 0 0;
+    width: 100%;
 }
 
 .card .container {
-  padding: 15px;
+    padding: 15px;
 }
 
 .card .container h4 {
-  font-size: 22px;
-  margin: 10px 0;
+    font-size: 22px;
+    margin: 10px 0;
 }
 
 .card .container p {
-  font-size: 18px;
-  color: #aaa;
+    font-size: 18px;
+    color: #aaa;
 }
 
 

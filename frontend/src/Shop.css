@@ -2,50 +2,50 @@
 
 /* Контейнер для страницы магазина */
 .shopPage {
-  padding: 20px;
+    padding: 20px;
 }
 
 /* Заголовок для страницы магазина */
 .Title {
-  text-align: center;
-  margin-bottom: 20px;
+    text-align: center;
+    margin-bottom: 20px;
 }
 
 /* Настройки для карточки магазина */
 .shopCard {
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  text-align: center;
-  padding: 10px;
-  margin: 0 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    text-align: center;
+    padding: 10px;
+    margin: 0 10px;
 }
 
 /* Настройки для изображений продукта */
 .productImage {
-  width: 100%;
-  height: 200px; /* Задайте нужную высоту */
-  object-fit: cover; /* Сохранение пропорций, центрирование изображения */
+    width: 100%;
+    height: 200px; /* Задайте нужную высоту */
+    object-fit: cover; /* Сохранение пропорций, центрирование изображения */
 }
 
 /* Информация о продукте */
 .info {
-  margin-top: 10px;
+    margin-top: 10px;
 }
 
 /* Кнопка покупки */
 .buyButton {
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
 }
 
 .buyButton:hover {
-  background-color: #0056b3;
+    background-color: #0056b3;
 }

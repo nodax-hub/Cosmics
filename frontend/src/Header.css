@@ -1,58 +1,58 @@
 /* Header.css */
 
 .header-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 50px;
-  background-color: white;
-  font-family: 'Comic Neue', sans-serif;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 50px;
+    background-color: white;
+    font-family: 'Comic Neue', sans-serif;
 }
 
 .header-bottom {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: black;
-  padding: 10px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: black;
+    padding: 10px 0;
 }
 
 .logo {
-  display: flex;
-  align-items: center;
+    display: flex;
+    align-items: center;
 }
 
 @font-face {
-  font-family: 'CustomFont';
-  src: url('./fonts/PatsySans-Italic.otf') format('truetype');
+    font-family: 'CustomFont';
+    src: url('./fonts/PatsySans-Italic.otf') format('truetype');
 }
 
 .headerTitle {
-  font-family: 'CustomFont', 'Comic Neue', sans-serif;
-  font-size: 66px;
-  color: black;
-  margin: 0;
+    font-family: 'CustomFont', 'Comic Neue', sans-serif;
+    font-size: 66px;
+    color: black;
+    margin: 0;
 }
 
 .navigation {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .navLink {
-  text-decoration: none;
-  color: white;
-  font-weight: bold;
-  font-size: 18px;
-  padding: 10px 20px;
-  border-radius: 10px;
-  margin: 0 10px;
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    padding: 10px 20px;
+    border-radius: 10px;
+    margin: 0 10px;
 }
 
 .navLink:hover {
-  background-color: #00c8ff;
-  color: black;
+    background-color: #00c8ff;
+    color: black;
 }
 
 .button,
@@ -64,17 +64,17 @@
 .editSaveButton,
 .contactButton,
 .submitButton {
-  background: linear-gradient(135deg, #6e8efb, #a777e3);
-  border: none;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  padding: 12px 25px;
-  border-radius: 12px;
-  font-size: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: background 0.3s, box-shadow 0.3s;
-  font-family: 'Comic Neue', sans-serif;
+    background: linear-gradient(135deg, #6e8efb, #a777e3);
+    border: none;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 12px 25px;
+    border-radius: 12px;
+    font-size: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: background 0.3s, box-shadow 0.3s;
+    font-family: 'Comic Neue', sans-serif;
 }
 
 .button:hover,
@@ -86,27 +86,27 @@
 .editSaveButton:hover,
 .contactButton:hover,
 .submitButton:hover {
-  background: linear-gradient(135deg, #5d7efb, #9066e3);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(135deg, #5d7efb, #9066e3);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 .authButtons {
-  display: flex;
-  gap: 10px; /* Расстояние между кнопками */
+    display: flex;
+    gap: 10px; /* Расстояние между кнопками */
 }
 
 .profileButton {
-  text-decoration: none;
-  color: white;
-  background: linear-gradient(135deg, #6e8efb, #a777e3);
-  border-radius: 12px;
-  font-size: 20px;
-  padding: 12px 25px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: background 0.3s, box-shadow 0.3s;
+    text-decoration: none;
+    color: white;
+    background: linear-gradient(135deg, #6e8efb, #a777e3);
+    border-radius: 12px;
+    font-size: 20px;
+    padding: 12px 25px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: background 0.3s, box-shadow 0.3s;
 }
 
 .profileButton:hover {
-  background: linear-gradient(135deg, #5d7efb, #9066e3);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(135deg, #5d7efb, #9066e3);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }

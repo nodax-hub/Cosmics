@@ -1,19 +1,18 @@
-from typing import List, Literal
+from typing import List
+
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import OAuth2PasswordBearer
 from fastapi_jwt_auth import AuthJWT
 from fastapi_jwt_auth.exceptions import AuthJWTException
-from pydantic import BaseModel
-from fastapi.security import OAuth2PasswordBearer
-
-from sqlalchemy.orm import Session
 from passlib.context import CryptContext
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
 from backend.src import crud, models, schemas
-from .models import ComicBook  # Изменен путь импорта на относительный
-
-from .schemas import ComicBookResponse
 from backend.src.database import SessionLocal, engine
+from .models import ComicBook  # Изменен путь импорта на относительный
+from .schemas import ComicBookResponse
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -34,16 +33,20 @@ app.add_middleware(
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+
 class Settings(BaseModel):
     authjwt_secret_key: str = "secret"
+
 
 @AuthJWT.load_config
 def get_config():
     return Settings()
 
+
 @app.exception_handler(AuthJWTException)
 def authjwt_exception_handler(request, exc):
     return HTTPException(status_code=exc.status_code, detail=exc.message)
+
 
 # Dependency for getting DB session
 def get_db():
@@ -54,9 +57,8 @@ def get_db():
         db.close()
 
 
-
-
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
 
 def get_user_by_token(token: str, db: Session = Depends(get_db)):
     user = crud.get_user_by_token(db, token)
@@ -67,12 +69,14 @@ def get_user_by_token(token: str, db: Session = Depends(get_db)):
         )
     return user
 
+
 @app.post("/users/", response_model=schemas.User)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = crud.get_user_by_email(db, email=user.email)
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     return crud.create_user(db=db, user=user)
+
 
 # Зависимость для проверки JWT и получения текущего пользователя
 def get_current_user(Authorize: AuthJWT = Depends(), db: Session = Depends(get_db)):
@@ -87,6 +91,7 @@ def get_current_user(Authorize: AuthJWT = Depends(), db: Session = Depends(get_d
         raise HTTPException(status_code=401, detail="User not found")
     return user
 
+
 @app.post("/auth/token/login/")
 def login(user: schemas.UserLogin, db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
     db_user = crud.get_user_by_email(db, email=user.email)
@@ -95,16 +100,18 @@ def login(user: schemas.UserLogin, db: Session = Depends(get_db), Authorize: Aut
     access_token = Authorize.create_access_token(subject=user.email)
     return {"access_token": access_token}
 
+
 # Пример маршрута, доступного только авторизованным пользователям
 @app.get("/users/me", response_model=schemas.User)
 def read_users_me(current_user: schemas.User = Depends(get_current_user)):
     return current_user
 
+
 @app.put("/users/me", response_model=schemas.User)
 def update_current_user(
-    user_update: schemas.UserUpdate,
-    db: Session = Depends(get_db),
-    current_user: schemas.User = Depends(get_current_user)
+        user_update: schemas.UserUpdate,
+        db: Session = Depends(get_db),
+        current_user: schemas.User = Depends(get_current_user)
 ):
     if user_update.password:
         user_update.password = pwd_context.hash(user_update.password)
@@ -113,16 +120,20 @@ def update_current_user(
         raise HTTPException(status_code=404, detail="User not found")
     return updated_user
 
+
 # Пример маршрута для создания комикса, доступного только авторизованным пользователям
 @app.post("/comic_books/", response_model=schemas.ComicBook)
 def create_comic_book(
-        comic_book: schemas.ComicBookCreate, db: Session = Depends(get_db), current_user: schemas.User = Depends(get_current_user)
+        comic_book: schemas.ComicBookCreate, db: Session = Depends(get_db),
+        current_user: schemas.User = Depends(get_current_user)
 ):
     return crud.create_comic_book(db=db, comic_book=comic_book)
+
 
 @app.get("/comic_books/", response_model=List[schemas.ComicBook])
 def read_comic_books(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return crud.get_comic_books(db, skip=skip, limit=limit)
+
 
 @app.get("/comics", response_model=list[ComicBookResponse])
 def read_comics(db: Session = Depends(get_db)):
@@ -137,8 +148,6 @@ def read_comic_book(id: int, db: Session = Depends(get_db)):
     if comic_book is None:
         raise HTTPException(status_code=404, detail="Comic not found")
     return comic_book
-
-
 
 
 if __name__ == '__main__':

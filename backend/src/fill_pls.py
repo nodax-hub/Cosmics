@@ -1,6 +1,8 @@
 import random
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
+
 from models import Base, ComicBook
 
 # Данные для заполнения таблицы ComicBook
