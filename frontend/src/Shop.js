@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import Slider from 'react-slick';
 import Modal from './Modal'; // Импорт компонента модального окна
 import './Shop.css';
@@ -13,7 +13,6 @@ const ShopPage = () => {
     const [selectedComic, setSelectedComic] = useState(null);
 
     useEffect(() => {
-        // Функция для загрузки данных о комиксах
         const fetchComics = async () => {
             try {
                 const response = await fetch('http://localhost:8000/api/comics');
@@ -55,6 +54,12 @@ const ShopPage = () => {
 
     const handleCardClick = (comicId) => {
         fetchComicDetails(comicId);
+    };
+
+    const handleBuyClick = (e, comic) => {
+        e.stopPropagation(); // Предотвращаем всплытие события клика
+        console.log('Покупка комикса:', comic);
+        // Добавьте логику для обработки покупки здесь
     };
 
     const handleCloseModal = () => {
@@ -109,7 +114,12 @@ const ShopPage = () => {
                         <div className="info">
                             <p>{comic.title}</p>
                             <p>{comic.price} рублей</p>
-                            <button className="buyButton">Купить</button>
+                            <button
+                                className="buyButton"
+                                onClick={(e) => handleBuyClick(e, comic)}
+                            >
+                                Купить
+                            </button>
                         </div>
                     </div>
                 ))}
