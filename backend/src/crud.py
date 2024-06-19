@@ -72,19 +72,19 @@ def create_comic_book(db: Session, comic_book: schemas.ComicBookCreate):
 
 def create_order(db: Session, order: schemas.OrderCreate, user_id: int):
     db_order = models.Order(customer_id=user_id)
-
+    
     db.add(db_order)
     db.flush()
-
+    
     for sale in order.sales:
         db.add(models.Sale(order_id=db_order.id, **sale.dict()))
         if sale.quantity == 666:
             raise Exception
-
+    
     db.commit()
-
+    
     return db_order
 
 
 def get_all_sales_by_order_id(db: Session, order_id: int):
-    return db.query(models.Sale).filter_by(order_id = order_id).all()
+    return db.query(models.Sale).filter_by(order_id=order_id).all()

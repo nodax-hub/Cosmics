@@ -1,4 +1,6 @@
 /* UserProfile.css */
+
+/* Основной контейнер профиля */
 .userProfile {
     max-width: 800px;
     margin: 0 auto;
@@ -8,19 +10,23 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Детали пользователя */
 .userDetails {
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
+/* Картинка профиля */
 .profilePicture {
     width: 150px;
     height: 150px;
     border-radius: 50%;
     margin-bottom: 20px;
+    border: 2px solid #ccc;
 }
 
+/* Информация о пользователе */
 .userInfo {
     text-align: center;
 }
@@ -44,10 +50,12 @@
     border-radius: 5px;
 }
 
+/* Контактная информация */
 .contactInfo {
     margin-bottom: 20px;
 }
 
+/* Кнопка редактирования/сохранения */
 .editSaveButton {
     padding: 10px 20px;
     margin: 10px;
@@ -64,6 +72,7 @@
     background-color: #45a049;
 }
 
+/* Секция заказов */
 .orders {
     margin-top: 30px;
     text-align: left;
@@ -74,11 +83,69 @@
     margin-bottom: 10px;
 }
 
+/* Карточка заказа */
 .order {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.order:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.order span {
+    display: block;
+    margin-bottom: 5px;
 }
 
 .order:last-child {
     border-bottom: none;
+}
+
+/* Контейнер для слайдера заказов */
+.orderSlider {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Слайд комикса */
+.comicSlide {
+    text-align: center;
+}
+
+.comicImage {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.comicInfo {
+    margin-top: 10px;
+}
+
+/* Кнопка закрытия слайдера */
+.closeButton {
+    display: block;
+    margin: 10px auto;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.closeButton:hover {
+    background: #00c8ff;
 }

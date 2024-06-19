@@ -1,19 +1,109 @@
 import {useContext, useEffect, useRef, useState} from 'react';
+import Slider from 'react-slick';
 import './UserProfile.css';
 import profile from './Images/профиль.jpg';
 import {UserContext} from './context/UserContext';
 import {useNavigate} from 'react-router-dom';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 
 const UserProfile = () => {
     const [user, setUser] = useState(null);
-    const [orders] = useState([]); // Для примера
-    const [editing, setEditing] = useState(false);
+    const [orders, setOrders] = useState([]); // Пример данных заказов
+    const [selectedOrder, setSelectedOrder] = useState(null); // Состояние для выбранного заказа
+    const [editing, setEditing] = useState(false); // Состояние для режима редактирования
     const [token, setToken] = useContext(UserContext);
     const navigate = useNavigate();
     const hasFetched = useRef(false);
 
     useEffect(() => {
         if (hasFetched.current) return;
+
+        // Пример данных заказов, замените реальными данными позже
+        const exampleOrders = [
+            {
+                id: 1,
+                date: '2023-06-01',
+                status: 'Доставлен',
+                comics: [
+                    {id: 1, title: 'Комикс 1', price: 100, image: '/comics/1.jpg'},
+                    {id: 2, title: 'Комикс 2', price: 200, image: '/comics/3.jpg'},
+                    {id: 1, title: 'Комикс 1', price: 100, image: '/comics/4.jpg'},
+                    {id: 2, title: 'Комикс 2', price: 200, image: '/comics/2.jpg'}
+                ]
+            },
+            {
+                id: 2,
+                date: '2023-07-01',
+                status: 'В пути',
+                comics: [
+                    {id: 3, title: 'Комикс 3', price: 150, image: '/comics/3.jpg'},
+                    {id: 4, title: 'Комикс 4', price: 250, image: '/comics/4.jpg'}
+                ]
+            },
+
+            {
+                id: 2,
+                date: '2023-07-01',
+                status: 'В пути',
+                comics: [
+                    {id: 3, title: 'Комикс 3', price: 150, image: '/comics/3.jpg'},
+                    {id: 4, title: 'Комикс 4', price: 250, image: '/comics/4.jpg'}
+                ]
+            },
+
+            {
+                id: 2,
+                date: '2023-07-01',
+                status: 'В пути',
+                comics: [
+                    {id: 3, title: 'Комикс 3', price: 150, image: '/comics/3.jpg'},
+                    {id: 4, title: 'Комикс 4', price: 250, image: '/comics/4.jpg'}
+                ]
+            },
+
+            {
+                id: 2,
+                date: '2023-07-01',
+                status: 'В пути',
+                comics: [
+                    {id: 3, title: 'Комикс 3', price: 150, image: '/comics/3.jpg'},
+                    {id: 4, title: 'Комикс 4', price: 250, image: '/comics/4.jpg'}
+                ]
+            },
+
+            {
+                id: 2,
+                date: '2023-07-01',
+                status: 'В пути',
+                comics: [
+                    {id: 3, title: 'Комикс 3', price: 150, image: '/comics/3.jpg'},
+                    {id: 4, title: 'Комикс 4', price: 250, image: '/comics/4.jpg'}
+                ]
+            },
+            {
+                id: 2,
+                date: '2023-07-01',
+                status: 'В пути',
+                comics: [
+                    {id: 3, title: 'Комикс 3', price: 150, image: '/comics/3.jpg'},
+                    {id: 4, title: 'Комикс 4', price: 250, image: '/comics/4.jpg'}
+                ]
+            },
+
+            {
+                id: 2,
+                date: '2023-07-01',
+                status: 'В пути',
+                comics: [
+                    {id: 3, title: 'Комикс 3', price: 150, image: '/comics/3.jpg'},
+                    {id: 4, title: 'Комикс 4', price: 250, image: '/comics/4.jpg'}
+                ]
+            }
+
+
+        ];
+        setOrders(exampleOrders);
 
         const fetchUser = async () => {
             console.log('Fetching user data');
@@ -39,7 +129,6 @@ const UserProfile = () => {
                 setUser(userData);
             } catch (error) {
                 console.error('Ошибка:', error.message);  // Более подробное логирование
-                // alert('Не удалось загрузить данные пользователя');
             }
         };
 
@@ -49,9 +138,16 @@ const UserProfile = () => {
         }
     }, [token, navigate]);
 
+    const handleOrderClick = (order) => {
+        setSelectedOrder(order);
+    };
+
+    const handleCloseSlider = () => {
+        setSelectedOrder(null);
+    };
 
     const handleEdit = () => {
-        setEditing(true);
+        setEditing(true); // Включаем режим редактирования
     };
 
     const handleSave = async () => {
@@ -80,7 +176,7 @@ const UserProfile = () => {
 
             const updatedUser = await response.json();
             setUser(updatedUser);
-            setEditing(false);
+            setEditing(false); // Отключаем режим редактирования
             alert('Данные успешно обновлены');
 
             // Проверим, вернулся ли новый токен и нужно ли его обновить
@@ -99,6 +195,14 @@ const UserProfile = () => {
 
     const handleChange = (e) => {
         setUser({...user, [e.target.name]: e.target.value});
+    };
+
+    const sliderSettings = {
+        dots: true,
+        infinite: true,
+        speed: 500,
+        slidesToShow: 2,
+        slidesToScroll: 1
     };
 
     if (!user) {
@@ -173,13 +277,30 @@ const UserProfile = () => {
             <div className="orders">
                 <h2>Мои заказы:</h2>
                 {orders.map((order) => (
-                    <div key={order.id} className="order">
+                    <div key={order.id} className="order" onClick={() => handleOrderClick(order)}>
                         <span>ID заказа: {order.id}</span>
-                        <span>Дата: {order.name}</span>
+                        <span>Дата: {order.date}</span>
                         <span>Статус: {order.status}</span>
                     </div>
                 ))}
             </div>
+            {selectedOrder && (
+                <div className="orderSlider">
+                    <h3>Комиксы в заказе {selectedOrder.id}:</h3>
+                    <Slider {...sliderSettings}>
+                        {selectedOrder.comics.map((comic) => (
+                            <div key={comic.id} className="comicSlide">
+                                <img src={comic.image} alt={comic.title} className="comicImage"/>
+                                <div className="comicInfo">
+                                    <p>{comic.title}</p>
+                                    <p>{comic.price} рублей</p>
+                                </div>
+                            </div>
+                        ))}
+                    </Slider>
+                    <button className="closeButton" onClick={handleCloseSlider}>Закрыть</button>
+                </div>
+            )}
         </div>
     );
 };

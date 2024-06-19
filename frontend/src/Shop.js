@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import {useEffect, useState} from 'react';
 import Slider from 'react-slick';
 import Modal from './Modal'; // Импорт компонента модального окна
 import './Shop.css';
