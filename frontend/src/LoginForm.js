@@ -2,18 +2,21 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import './LoginForm.css';
+import { UserContext } from './context/UserContext';
+import { useContext } from 'react';
 
 const LoginForm = ({ isVisible, onClose }) => {
   const [authEmail, setAuthEmail] = useState('');
   const [authPassword, setAuthPassword] = useState('');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
+  const [, setToken] = useContext(UserContext);
 
   const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:8000/auth/token/login/', {
+      const response = await fetch('http://localhost:8000/api/auth/token/login/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -21,19 +24,29 @@ const LoginForm = ({ isVisible, onClose }) => {
         body: JSON.stringify({ email: authEmail, password: authPassword }),
       });
 
-      const data = await response.json();
-      if (response.ok) {
-        localStorage.setItem('token', data.access_token);
-        setMessage('Вход выполнен успешно!');
-        setTimeout(() => {
-          onClose();
-          setMessage('');
-          navigate('/profile'); // Перенаправление на страницу профиля после успешного входа
-          window.location.reload(); // Обновление страницы для принудительного обновления Header
-        }, 2000);
-      } else {
-        alert('Ошибка входа: ' + JSON.stringify(data));
+      if (!response.ok) {
+        const errorData = await response.text(); // Чтение тела ответа как текст
+        console.error('Ошибка входа:', errorData);
+        if (response.headers.get('content-type')?.includes('application/json')) {
+          // Если ответ содержит JSON, парсим его
+          const errorJson = JSON.parse(errorData);
+          alert('Ошибка входа: ' + JSON.stringify(errorJson));
+        } else {
+          // Иначе, выводим текстовый ответ
+          alert('Ошибка входа: ' + errorData);
+        }
+        return;
       }
+
+      const data = await response.json();
+      setToken(data.access_token);
+      setMessage('Вход выполнен успешно!');
+      setTimeout(() => {
+        onClose();
+        setMessage('');
+        navigate('/profile'); // Перенаправление на страницу профиля после успешного входа
+        window.location.reload(); // Обновление страницы для принудительного обновления Header
+      }, 2000);
     } catch (error) {
       console.error('Ошибка:', error);
       alert('Ошибка входа');

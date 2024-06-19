@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useContext } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Header from './Header';
 import MainContent from './MainContent';
@@ -10,39 +10,55 @@ import UserProfile from './UserProfile';
 import Error from './Error';
 import ContactForm from './ContactForm';
 import Admin from "./Admin";
+import { UserProvider, UserContext } from './context/UserContext';
+import PrivateRoute from './PrivateRoute'; // Импортируем PrivateRoute
+
 import './App.css';
 
-function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      setIsAuthenticated(true);
-    }
-  }, []);
+function AppContent() {
+  const [, setToken] = useContext(UserContext);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    setIsAuthenticated(false);
-    // Перенаправление на главную страницу после выхода будет выполнено внутри компонента Header
+    setToken(null);
+    localStorage.removeItem('token'); // Удаление токена из localStorage при выходе
   };
+
+  useEffect(() => {
+    // Проверка токена в localStorage при монтировании компонента
+    const savedToken = localStorage.getItem('token');
+    if (savedToken) {
+      setToken(savedToken);
+    }
+  }, [setToken]);
 
   return (
     <Router>
-      <Header isAuthenticated={isAuthenticated} onLogout={handleLogout} />
+      <Header onLogout={handleLogout} />
       <div className="App">
         <div className="background">
           <div className="stars-container"></div>
         </div>
         <Routes>
           <Route path="/" element={<><MainContent /><AboutUs /><WorkWithUs /><Shop /><ContactForm /><Footer /></>} />
-          <Route path="/profile" element={<UserProfile />} />
-          <Route path="/admin" element={<Admin />} />
+          {/* Защищенные маршруты обернуты в PrivateRoute */}
+          <Route path="/profile" element={<PrivateRoute />}>
+            <Route path="" element={<UserProfile />} />
+          </Route>
+          <Route path="/admin" element={<PrivateRoute />}>
+            <Route path="" element={<Admin />} />
+          </Route>
           <Route path="*" element={<Error />} />
         </Routes>
       </div>
     </Router>
+  );
+}
+
+function App() {
+  return (
+    <UserProvider>
+      <AppContent />
+    </UserProvider>
   );
 }
 

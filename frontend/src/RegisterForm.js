@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import './RegisterForm.css';
+import { UserContext } from './context/UserContext';
 
 const RegisterForm = ({ isVisible, onClose }) => {
   const [login, setLogin] = useState('');
@@ -12,6 +13,7 @@ const RegisterForm = ({ isVisible, onClose }) => {
   const [lastName, setLastName] = useState('');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
+  const [, setToken] = useContext(UserContext);
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -21,7 +23,7 @@ const RegisterForm = ({ isVisible, onClose }) => {
     }
 
     try {
-      const response = await fetch('http://localhost:8000/users/', {
+      const response = await fetch('http://localhost:8000/api/users/', { // Убедитесь, что URL правильный
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -38,7 +40,7 @@ const RegisterForm = ({ isVisible, onClose }) => {
       if (response.ok) {
         setMessage('Регистрация прошла успешно!');
         try {
-          const response = await fetch('http://localhost:8000/auth/token/login/', {
+          const response = await fetch('http://localhost:8000/api/auth/token/login/', { // Используйте правильный URL для входа
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -48,7 +50,7 @@ const RegisterForm = ({ isVisible, onClose }) => {
 
           const data = await response.json();
           if (response.ok) {
-            localStorage.setItem('token', data.access_token);
+            setToken(data.access_token);
             setMessage('Вход выполнен успешно!');
             setTimeout(() => {
               onClose();
@@ -57,7 +59,8 @@ const RegisterForm = ({ isVisible, onClose }) => {
               window.location.reload(); // Обновление страницы для принудительного обновления Header
             }, 2000);
           } else {
-            alert('Ошибка входа: ' + JSON.stringify(data));
+            const errorData = await response.text();
+            alert('Ошибка входа: ' + errorData);
           }
         } catch (error) {
           console.error('Ошибка:', error);
@@ -65,8 +68,9 @@ const RegisterForm = ({ isVisible, onClose }) => {
         }
 
       } else {
-        const errorData = await response.json();
-        alert('Ошибка регистрации: ' + JSON.stringify(errorData));
+        const errorData = await response.text(); // Чтение ответа как текст
+        console.error('Ошибка регистрации:', errorData);
+        alert('Ошибка регистрации: ' + errorData);
       }
     } catch (error) {
       console.error('Ошибка:', error);

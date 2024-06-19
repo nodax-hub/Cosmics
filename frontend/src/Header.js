@@ -1,14 +1,16 @@
 import PropTypes from 'prop-types';
 import './Header.css';
-import { useState, useEffect } from 'react';
+import { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import LoginForm from './LoginForm';
 import RegisterForm from './RegisterForm';
+import { UserContext } from './context/UserContext';
 
-const Header = ({ isAuthenticated, onLogout }) => {
+const Header = ({ onLogout }) => {
   const [isLoginVisible, setLoginVisible] = useState(false);
   const [isRegisterVisible, setRegisterVisible] = useState(false);
   const navigate = useNavigate();
+  const [token, setToken] = useContext(UserContext); // Используем token из контекста
 
   const toggleLoginForm = () => {
     setLoginVisible(!isLoginVisible);
@@ -21,14 +23,11 @@ const Header = ({ isAuthenticated, onLogout }) => {
   };
 
   const handleLogoutClick = () => {
+    setToken(null);
+    localStorage.removeItem('token'); // Удаление токена из localStorage
     onLogout();
     navigate('/'); // Перенаправление на главную страницу после выхода
   };
-
-  // Используем useEffect для обновления интерфейса при изменении состояния isAuthenticated
-  useEffect(() => {
-    // Это гарантирует, что когда isAuthenticated изменяется, компонент будет обновляться
-  }, [isAuthenticated]);
 
   return (
     <header>
@@ -36,7 +35,7 @@ const Header = ({ isAuthenticated, onLogout }) => {
         <div className="logo">
           <h1 className="headerTitle">COSMICS</h1>
         </div>
-        {isAuthenticated ? (
+        {token ? (
           <div className="authButtons">
             <Link to="/profile" className="profileButton">Профиль</Link>
             <button className="logoutButton" onClick={handleLogoutClick}>Выход</button>
@@ -63,7 +62,6 @@ const Header = ({ isAuthenticated, onLogout }) => {
 };
 
 Header.propTypes = {
-  isAuthenticated: PropTypes.bool.isRequired,
   onLogout: PropTypes.func.isRequired,
 };
 

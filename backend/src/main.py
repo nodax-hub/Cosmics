@@ -12,7 +12,7 @@ from backend.src.database import SessionLocal, engine
 
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
+app = FastAPI(root_path="/api")
 
 origins = [
     "http://localhost:3000",

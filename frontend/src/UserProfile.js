@@ -2,6 +2,7 @@ import { useState } from 'react';
 import './UserProfile.css';
 import profile from './Images/профиль.jpg';
 
+
 const UserProfile = () => {
   const [user, setUser] = useState({
     firstName: 'Михаил',
