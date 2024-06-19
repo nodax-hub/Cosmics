@@ -38,42 +38,40 @@ class UserUpdate(BaseModel):
 class User(UserInfo):
     id: int
     role: Role
-    
+
+    class Config:
+        orm_mode = True
+
+
+class SaleBase(BaseModel):
+    comic_book_id: int
+    quantity: int
+
+
+class Sale(SaleBase):
+    id: int
+    sale_date: datetime
+    order_id: int
+
     class Config:
         orm_mode = True
 
 
 class OrderBase(BaseModel):
-    customer_id: int
+    pass
 
 
 class OrderCreate(OrderBase):
-    pass
+    """Используется для создания нового заказа"""
+    sales: list[SaleBase]
 
 
 class Order(OrderBase):
     id: int
     order_date: datetime
     status: str
-    
-    class Config:
-        orm_mode = True
+    customer_id: int
 
-
-class SaleBase(BaseModel):
-    order_id: int
-    comic_book_id: int
-    quantity: int
-
-
-class SaleCreate(SaleBase):
-    pass
-
-
-class Sale(SaleBase):
-    id: int
-    sale_date: datetime
-    
     class Config:
         orm_mode = True
 
@@ -101,7 +99,7 @@ class ComicBook(BaseModel):
     description: str
     genre: str
     price: float
-    
+
     class Config:
         orm_mode = True
 
@@ -110,6 +108,6 @@ class ComicBookResponse(BaseModel):
     id: int
     title: str
     price: float
-    
+
     class Config:
         orm_mode = True

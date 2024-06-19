@@ -1,4 +1,5 @@
 import random
+from pathlib import Path
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
@@ -239,7 +240,7 @@ def create_unique_comics(session: Session):
 
 
 def main():
-    database_path = r'C:\Users\nik_z\PycharmProjects\here\sql_app.db'
+    database_path = Path('../../sql_app.db')
     engine = create_engine(f'sqlite:///{database_path}')
     Base.metadata.bind = engine
     

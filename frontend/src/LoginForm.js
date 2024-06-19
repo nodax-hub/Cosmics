@@ -29,6 +29,7 @@ const LoginForm = ({isVisible, onClose}) => {
             if (!response.ok) {
                 const errorData = await response.text(); // Чтение тела ответа как текст
                 console.error('Ошибка входа:', errorData);
+                alert('Ошибка', errorData);
             } else {
                 const data = await response.json();
                 setToken(data.access_token);

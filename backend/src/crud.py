@@ -14,10 +14,8 @@ def get_user_by_email(db: Session, email: str):
     return db.query(models.User).filter(models.User.email == email).first()
 
 
-
 def get_user_by_login(db: Session, login: str):
     return db.query(models.User).filter(models.User.login == login).first()
-
 
 
 def get_comic_book_by_attribute(db: Session, **kwargs):
@@ -70,3 +68,23 @@ def create_comic_book(db: Session, comic_book: schemas.ComicBookCreate):
     db.commit()
     db.refresh(db_item)
     return db_item
+
+
+def create_order(db: Session, order: schemas.OrderCreate, user_id: int):
+    db_order = models.Order(customer_id=user_id)
+
+    db.add(db_order)
+    db.flush()
+
+    for sale in order.sales:
+        db.add(models.Sale(order_id=db_order.id, **sale.dict()))
+        if sale.quantity == 666:
+            raise Exception
+
+    db.commit()
+
+    return db_order
+
+
+def get_all_sales_by_order_id(db: Session, order_id: int):
+    return db.query(models.Sale).filter_by(order_id = order_id).all()

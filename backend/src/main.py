@@ -29,6 +29,7 @@ app.add_middleware(
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+
 @app.exception_handler(AuthJWTException)
 def authjwt_exception_handler(request, exc):
     return HTTPException(status_code=exc.status_code, detail=exc.message)
@@ -104,6 +105,23 @@ def read_comic_book(id: int, db: Session = Depends(get_db)):
     return comic_book
 
 
+@app.post('/order/create_order', response_model=schemas.Order, tags=['order'])
+def create_order(
+        current_user_id: int,
+        order: schemas.OrderCreate,
+        db: Session = Depends(get_db),
+        # current_user: schemas.User = Depends(services.get_current_user)
+):
+    return crud.create_order(db=db, order=order, user_id=current_user_id)
+
+
+@app.get('/sales/{order_id}', response_model=list[schemas.Sale], tags=['order'])
+def get_sales(
+        order_id: int,
+        db: Session = Depends(get_db),
+        # current_user: schemas.User = Depends(services.get_current_user)
+):
+    return crud.get_all_sales_by_order_id(db=db, order_id=order_id)
 
 
 if __name__ == '__main__':
