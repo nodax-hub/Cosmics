@@ -38,7 +38,7 @@ class UserUpdate(BaseModel):
 class User(UserInfo):
     id: int
     role: Role
-
+    
     class Config:
         orm_mode = True
 
@@ -52,7 +52,7 @@ class Sale(SaleBase):
     id: int
     sale_date: datetime
     order_id: int
-
+    
     class Config:
         orm_mode = True
 
@@ -71,7 +71,7 @@ class Order(OrderBase):
     order_date: datetime
     status: str
     customer_id: int
-
+    
     class Config:
         orm_mode = True
 
@@ -99,7 +99,7 @@ class ComicBook(BaseModel):
     description: str
     genre: str
     price: float
-
+    
     class Config:
         orm_mode = True
 
@@ -108,6 +108,6 @@ class ComicBookResponse(BaseModel):
     id: int
     title: str
     price: float
-
+    
     class Config:
         orm_mode = True

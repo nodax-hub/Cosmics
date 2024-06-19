@@ -11,9 +11,9 @@ const ShopPage = () => {
     const [error, setError] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [selectedComic, setSelectedComic] = useState(null);
+    const [cartCount, setCartCount] = useState(0); // Состояние для количества товаров в корзине
 
     useEffect(() => {
-        // Функция для загрузки данных о комиксах
         const fetchComics = async () => {
             try {
                 const response = await fetch('http://localhost:8000/api/comics');
@@ -57,9 +57,19 @@ const ShopPage = () => {
         fetchComicDetails(comicId);
     };
 
+    const handleBuyClick = (e, comic) => {
+        e.stopPropagation(); // Предотвращаем всплытие события клика
+        console.log('Покупка комикса:', comic);
+        setCartCount(cartCount + 1); // Увеличиваем количество товаров в корзине
+    };
+
     const handleCloseModal = () => {
         setShowModal(false);
         setSelectedComic(null);
+    };
+
+    const handleClearCart = () => {
+        setCartCount(0); // Очистка корзины
     };
 
     const settings = {
@@ -109,7 +119,12 @@ const ShopPage = () => {
                         <div className="info">
                             <p>{comic.title}</p>
                             <p>{comic.price} рублей</p>
-                            <button className="buyButton">Купить</button>
+                            <button
+                                className="buyButton"
+                                onClick={(e) => handleBuyClick(e, comic)}
+                            >
+                                Купить
+                            </button>
                         </div>
                     </div>
                 ))}
@@ -121,6 +136,14 @@ const ShopPage = () => {
                     comic={selectedComic}
                 />
             )}
+            <div className="shopControls">
+                <button className="cartButton">
+                    🛒 {cartCount}
+                </button>
+                <button className="clearButton" onClick={handleClearCart}>
+                    ❌
+                </button>
+            </div>
         </div>
     );
 };

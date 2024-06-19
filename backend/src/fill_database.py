@@ -43,7 +43,7 @@ def create_comics(session: Session, num: int):
               "Drama"]
     publishers = ["Marvel Comics", "DC Comics", "Vertigo", "Image Comics", "Dark Horse Comics", "IDW Publishing",
                   "Boom! Studios", "Valiant Comics", "Archie Comics", "Dynamite Entertainment"]
-
+    
     # Добавляем случайные комиксы в базу данных
     for _ in range(num):
         comic_book_data = {
@@ -65,10 +65,10 @@ def main():
     # Создаем соединение с базой данных
     engine = create_engine("sqlite:///../../sql_app.db")
     Base.metadata.bind = engine
-
+    
     # Создаем сессию базы данных
     DBSession = sessionmaker(bind=engine)
-
+    
     with DBSession() as session:
         create_comics(session, 100)
         # create_users(session, 100)
