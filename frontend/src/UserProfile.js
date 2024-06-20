@@ -45,7 +45,7 @@ const UserProfile = () => {
             }
         };
 
-        const fetchUserOrders = async () => {
+        const fetchOrders = async () => {
             try {
                 const response = await fetch('http://localhost:8000/api/users/orders', {
                     method: 'GET',
@@ -63,8 +63,8 @@ const UserProfile = () => {
                     throw new Error('Ошибка при получении данных пользователя');
                 }
 
-                const userOrdersData = await response.json();
-                setOrders(userOrdersData);
+                const OrdersData = await response.json();
+                setOrders(OrdersData);
             } catch (error) {
                 console.error('Ошибка:', error.message);
             }
@@ -72,32 +72,17 @@ const UserProfile = () => {
 
         if (token) {
             fetchUser();
-            fetchUserOrders();
+            fetchOrders();
             hasFetched.current = true;
         }
     }, [token, navigate]);
 
     const handleOrderClick = async (order) => {
         try {
-            const response = await fetch(`http://localhost:8000/api/users/orders/${order.id}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-            });
-
-            if (!response.ok) {
-                if (response.status === 401) {
-                    alert('Требуется авторизация. Пожалуйста, войдите снова.');
-                    navigate('/');
-                    return;
-                }
-                throw new Error('Ошибка при получении данных заказа');
-            }
-
-            const data = await response.json();
-            setSelectedOrder(data);
-            setShowModal(true); // Показываем модальное окно при выборе заказа
+            let current_order = orders.find(o => o.id === order.id);
+            setSelectedOrder(current_order);
+            setShowModal(true);
+            console.log('current_order: ', current_order);
         } catch (error) {
             console.error('Ошибка:', error.message);
         }
@@ -240,7 +225,8 @@ const UserProfile = () => {
                 {orders.map((order) => (
                     <div key={order.id} className="order" onClick={() => handleOrderClick(order)}>
                         <span className="order-id">ID заказа: {order.id}</span>
-                        <span className="order-date">Дата: {order.order_date}</span>
+                        {user.role === 'admin' && (<span className="order-user-email">Email заказчика: {order.user.email}</span>)}
+                        <span className="order-date">Дата: {order.date}</span>
                         <span className="order-status">Статус: {order.status}</span>
                     </div>
                 ))}
@@ -248,14 +234,14 @@ const UserProfile = () => {
             {showModal && selectedOrder && (
                 <div className="orderModal">
                     <div className="modalContent">
-                        <h3>Комиксы в заказе:</h3>
+                        <h3>Комиксы в заказе ID {selectedOrder.id}:</h3>
+                        <h2>{user.role === 'admin' ? `${selectedOrder.user.first_name} ${selectedOrder.user.last_name}` : 'Мои заказы: '}</h2>
                         <Slider {...sliderSettings(selectedOrder.length)}>
-                            {selectedOrder.map((sale) => (
+                            {selectedOrder.sales.map((sale) => (
                                 <div key={sale.comic_book_id} className="comicSlide">
                                     <img src={`/comics/${sale.comic_book_id}.jpg`} alt={sale.comic_book_id}
-                                        className="comicImage" />
+                                         className="comicImage"/>
                                     <div className="comicInfo">
-                                        {user.role === 'admin' && <p>Owner email: {sale.order.user.email}</p>}
                                         <p>Название: {sale.comic_book.title}</p>
                                         <p>Автор: {sale.comic_book.author}</p>
                                         <p>Издатель: {sale.comic_book.publisher}</p>

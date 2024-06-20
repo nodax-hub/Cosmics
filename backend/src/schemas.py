@@ -1,7 +1,8 @@
 from datetime import datetime
-from enum import Enum
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+
+from backend.src import models
 
 
 class ComicBookBase(BaseModel):
@@ -14,109 +15,52 @@ class ComicBookBase(BaseModel):
     price: float
 
 
-class ComicBookCreate(ComicBookBase):
-    pass
-
-
-class ComicBook(BaseModel):
+class ComicBookResponse(ComicBookBase):
     id: int
-    title: str
-    author: str
-    publisher: str
-    stock_quantity: int
-    description: str
-    genre: str
-    price: float
     
     class Config:
         orm_mode = True
-
-
-class ComicBookResponse(BaseModel):
-    id: int
-    title: str
-    price: float
-    
-    class Config:
-        orm_mode = True
-
-
-class Role(str, Enum):
-    customer = "customer"
-    admin = "admin"
 
 
 class UserBase(BaseModel):
     email: str
-
-
-class UserInfo(UserBase):
     login: str
     first_name: str
     last_name: str
 
 
-class UserCreate(UserInfo):
+class UserWithPassword(UserBase):
     password: str
 
 
-class UserLogin(UserBase):
-    password: str
-
-
-class UserUpdate(BaseModel):
-    login: str | None = None
-    first_name: str | None = None
-    last_name: str | None = None
-    email: str | None = None
-    password: str | None = None
-
-
-class User(UserInfo):
+class UserResponse(UserBase):
     id: int
-    role: Role
+    role: models.Role
     
     class Config:
         orm_mode = True
 
 
 class SaleBase(BaseModel):
-    comic_book_id: int
-    quantity: int
-
-
-class OrderBase(BaseModel):
-    pass
-
-
-class OrderCreate(OrderBase):
-    """Используется для создания нового заказа"""
-    sales: list[SaleBase]
-
-
-class Order(OrderBase):
-    id: int
-    order_date: datetime
-    status: str
-    customer_id: int
-    
-    class Config:
-        orm_mode = True
-
-
-class OrderResponse(Order):
-    user: User
-    
-    class Config:
-        orm_mode = True
+    comic_book_id: int = Field(gt=0)
+    quantity: int = Field(gt=0)
 
 
 class SaleResponse(SaleBase):
+    comic_book: ComicBookResponse
+
+
+class OrderCreate(BaseModel):
+    sales: list[SaleBase]
+
+
+class OrderResponse(BaseModel):
     id: int
-    sale_date: datetime
-    order_id: int
-    comic_book: ComicBook
-    order: OrderResponse
+    date: datetime
+    status: str
+    
+    user: UserResponse
+    sales: list[SaleResponse]
     
     class Config:
         orm_mode = True

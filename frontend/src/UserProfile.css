@@ -116,6 +116,9 @@
 .order-id {
     font-weight: bold;
 }
+.order-user-email {
+    font-weight: bold;
+}
 
 .order-date,
 .order-status {

@@ -31,7 +31,7 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.User).offset(skip).limit(limit).all()
 
 
-def update_user(db: Session, user_id: int, user_update: schemas.UserUpdate):
+def update_user(db: Session, user_id: int, user_update: schemas.UserWithPassword):
     db_user = db.query(models.User).filter(models.User.id == user_id).first()
     if not db_user:
         return None
@@ -43,7 +43,7 @@ def update_user(db: Session, user_id: int, user_update: schemas.UserUpdate):
     return db_user
 
 
-def create_user(db: Session, user: schemas.UserCreate):
+def create_user(db: Session, user: schemas.UserWithPassword):
     hashed_password = pwd_context.hash(user.password)
     db_user = models.User(
         login=user.login,
@@ -61,14 +61,6 @@ def create_user(db: Session, user: schemas.UserCreate):
 
 def get_comic_books(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.ComicBook).offset(skip).limit(limit).all()
-
-
-def create_comic_book(db: Session, comic_book: schemas.ComicBookCreate):
-    db_item = models.ComicBook(**comic_book.dict())
-    db.add(db_item)
-    db.commit()
-    db.refresh(db_item)
-    return db_item
 
 
 def create_order(db: Session, order: schemas.OrderCreate, user_id: int):
@@ -91,14 +83,10 @@ def create_order(db: Session, order: schemas.OrderCreate, user_id: int):
 
 
 def get_all_sales_by_order_id(db: Session, order_id: int):
-    all_ = (db
+    return (db
             .query(models.Sale)
-            .join(models.ComicBook, models.Sale.comic_book_id == models.ComicBook.id)
-            .join(models.Order, models.Sale.order_id == models.Order.id)
-            .join(models.User, models.Order.customer_id == models.User.id)
-            .filter(models.Sale.order_id == order_id)
+            .filter_by(order_id=order_id)
             .all())
-    return all_
 
 
 def get_order_by_id(db: Session, order_id: int):
